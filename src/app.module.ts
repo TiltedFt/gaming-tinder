@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -7,16 +6,19 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TelegrafModule } from 'nestjs-telegraf';
 
 import { UserModule } from './user/user.module';
-import { GreeterModule } from './greeter/greeter.module';
 import { session } from 'telegraf';
-import { GreeterUpdate } from './greeter/greeter.update';
+import { I18nModule, QueryResolver, AcceptLanguageResolver } from 'nestjs-i18n';
+import * as path from 'path';
+import { BotModule } from './bot/bot.module';
+import { GameModule } from './game/game.module';
+import { GamingPlatformModule } from './gaming-platform/gaming-platform.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-        envFilePath: '.env',
-        isGlobal: true
-      }),
+      envFilePath: '.env',
+      isGlobal: true,
+    }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -37,13 +39,26 @@ import { GreeterUpdate } from './greeter/greeter.update';
       useFactory: (config: ConfigService) => ({
         token: config.get<string>('BOT_TOKEN')!,
         middlewares: [session()],
-        include: [GreeterModule]
+        include: [BotModule],
       }),
     }),
+    I18nModule.forRoot({
+      fallbackLanguage: 'en',
+      loaderOptions: {
+        path: path.join(process.cwd(), 'src', 'i18n'),
+        watch: true,
+      },
+      resolvers: [
+        new QueryResolver(['lang']), // ?lang=ru для веба
+        new AcceptLanguageResolver(), // Accept-Language header
+      ],
+    }),
     UserModule,
-    GreeterModule
+    BotModule,
+    GameModule,
+    GamingPlatformModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
