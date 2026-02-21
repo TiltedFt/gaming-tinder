@@ -1,6 +1,5 @@
 {
-  "public_username": "Write you custom username so you can show your profile to other people! ex. Gigachad1337. Do not use your telegram username - you will expose it to people you might not want to play with.",
-  "request_games": "In what games are you looking for teammates? ex. CS2, Dota2, Arc Raiders, Roblox",
-  "do_you_have": "test",
-  "description": "How would you like to describe your profile?"
+  "language_found": "We detected that your profile language is {language}. If you'd like to change it, choose from the options below:",
+  "language_not_found": "We couldn't detect your language. Please choose from the available options:",
+  "ask_public_username:": "Type in your username for your profile. DON'T use your Telegram username - create a new one. It's for public. Use more than 3 and not more than 30 symbols in your username."
 }

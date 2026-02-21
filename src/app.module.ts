@@ -12,6 +12,7 @@ import * as path from 'path';
 import { BotModule } from './bot/bot.module';
 import { GameModule } from './game/game.module';
 import { GamingPlatformModule } from './gaming-platform/gaming-platform.module';
+import { Postgres } from '@telegraf/session/pg';
 
 @Module({
   imports: [
@@ -38,7 +39,17 @@ import { GamingPlatformModule } from './gaming-platform/gaming-platform.module';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         token: config.get<string>('BOT_TOKEN')!,
-        middlewares: [session()],
+        middlewares: [
+          session({
+            store: Postgres({
+              host: config.get('DATABASE_HOST'),
+              port: config.get<number>('DATABASE_PORT'),
+              database: config.get('DATABASE_NAME'),
+              user: config.get('DATABASE_USER'),
+              password: config.get('DATABASE_PASSWORD'),
+            }),
+          }),
+        ],
         include: [BotModule],
       }),
     }),

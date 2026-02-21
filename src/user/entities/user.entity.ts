@@ -10,8 +10,8 @@ export enum Gender {
 
 @Entity()
 export class User extends CustomBaseEntity {
-  @Column({ type: 'varchar', length: 20, unique: true })
-  telegramId: string;
+  @Column({ type: 'integer', unique: true })
+  telegramId: number;
 
   // custom users username - for public
   @Column({ type: 'varchar', length: 50, unique: true, nullable: true })
@@ -39,6 +39,9 @@ export class User extends CustomBaseEntity {
   @ManyToMany(() => Game, (game) => game.users)
   @JoinTable()
   games: Game[];
+
+  @Column({ type: 'varchar' })
+  language: string;
 
   /*   // in da future goes into redddiiiiiis
   @Column({type: 'boolean', default: false})

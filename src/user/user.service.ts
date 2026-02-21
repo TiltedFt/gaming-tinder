@@ -12,27 +12,19 @@ export class UserService {
     private readonly repository: Repository<User>,
   ) {}
 
-  findByTelegramId(telegramId: string): Promise< User | null> {
-    return this.repository.findOneBy({telegramId})
+  findByTelegramId(telegramId: number): Promise<User | null> {
+    return this.repository.findOneBy({ telegramId: telegramId });
+  }
+
+  findByPublicUsername(publicUsername: string) {
+    return this.repository.findOneBy({ publicUsername });
   }
 
   create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+    return this.repository.save(this.repository.create(createUserDto));
   }
 
-  findAll() {
-    return `This action returns all user`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  findOneByTelegramId(telegramId: number) {
+    return this.repository.findOneBy({ telegramId });
   }
 }
