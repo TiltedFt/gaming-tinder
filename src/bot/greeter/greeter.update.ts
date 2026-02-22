@@ -6,7 +6,7 @@ import { Inject } from '@nestjs/common';
 import {
   REGISTRATION_WIZARD_SCENE,
   MAIN_MENU_SCENE,
-} from 'src/common/app-constants';
+} from 'src/common/constants/app-constants';
 
 @Update()
 export class GreeterUpdate {

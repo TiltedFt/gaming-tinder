@@ -1,4 +1,5 @@
 import { CustomBaseEntity } from 'src/common/base-entity';
+import { Language } from 'src/common/constants/supported-language';
 import { Game } from 'src/game/entity/game.entity';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
@@ -40,8 +41,8 @@ export class User extends CustomBaseEntity {
   @JoinTable()
   games: Game[];
 
-  @Column({ type: 'varchar' })
-  language: string;
+  @Column({ type: 'enum' })
+  language: Language;
 
   /*   // in da future goes into redddiiiiiis
   @Column({type: 'boolean', default: false})
