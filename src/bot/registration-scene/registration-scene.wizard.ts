@@ -69,29 +69,38 @@ export class RegistrationScene {
   @WizardStep(3)
   async onPublicUsername(
     @Ctx() ctx: BotWizardContext,
-    @Message('text') username: string,
+    @Message('text') publicUsername: string,
+    @Sender('id') telegramId: number,
+    @Sender('username') telegramUsername: string | undefined,
   ) {
-    username = username.trim();
-    if (!username || username.length < 3 || username.length > 30) {
-      await ctx.reply(this.i18n.t('registration.invalid_public_username', {}));
-      // back to step 3
+    const lang = ctx.wizard.state['language'];
+    publicUsername = publicUsername.trim();
+
+    const isValid = /^[a-zA-Z0-9_.\-]{3,30}$/.test(publicUsername);
+
+    if (!isValid) {
+      await ctx.reply(
+        this.i18n.t('registration.invalid_public_username', { lang }),
+      );
       return;
     }
+
+    const data = plainToInstance(CreateUserDto, {
+      telegramId: ctx.from,
+      publicUsername: publicUsername,
+      telegramUsername: telegramUsername,
+      language: lang,
+    });
+    const user = await this.registerUser(data);
   }
 
-  private async registerUser(data: any) {
-    const dto = plainToInstance(CreateUserDto, data);
-    const errors = await validate(dto);
-
-    /* if (errors.length > 0) {
-      const messages = errors.map((e) => Object.values(e.constraints)).flat();
-      throw new Error(messages.join(', '));
-    }
-    return await this.profileService.createUserProfile(userDto); */
+  private async registerUser(userDto: CreateUserDto) {
+    return await this.profileService.createUserProfile(userDto);
   }
 }
 
 /* 
+    const errors = await validate(createUserDto);
     @Sender('id') telegramId: number,
 
     @Sender('username') username: string | undefined,
