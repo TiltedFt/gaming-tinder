@@ -41,7 +41,7 @@ export class User extends CustomBaseEntity {
   @JoinTable()
   games: Game[];
 
-  @Column({ type: 'enum' })
+  @Column({ type: 'enum', enum: Language })
   language: Language;
 
   /*   // in da future goes into redddiiiiiis

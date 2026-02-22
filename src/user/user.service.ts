@@ -23,8 +23,4 @@ export class UserService {
   create(createUserDto: CreateUserDto) {
     return this.repository.save(this.repository.create(createUserDto));
   }
-
-  findOneByTelegramId(telegramId: number) {
-    return this.repository.findOneBy({ telegramId });
-  }
 }
