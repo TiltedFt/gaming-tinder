@@ -1,1 +1,25 @@
-{}
+{
+  "card_title": "👤 {publicUsername}",
+  "description": "📝 О себе: {value}",
+  "age": "🎂 Возраст: {value}",
+  "gender": "⚧ Пол: {value}",
+  "games": "🎮 Игры: {value}",
+  "has_mic": "🎤 Микрофон: {value}",
+  "communication": "💬 Связь: {value}",
+  "not_set": "не указано",
+  "no_games": "не выбраны",
+  "mic_yes": "есть",
+  "mic_no": "нет",
+  "gender_male": "мужской",
+  "gender_female": "женский",
+  "gender_other": "другой",
+  "onboarding_message": "Вот твой профиль! Он пока пустоват — заполни его, чтобы увеличить шансы найти идеального тиммейта!",
+  "btn_description": "📝 О себе",
+  "btn_age": "🎂 Возраст",
+  "btn_gender": "⚧ Пол",
+  "btn_games": "🎮 Игры",
+  "btn_mic": "🎤 Микрофон",
+  "btn_communication": "💬 Связь",
+  "btn_search": "🔍 Начать поиск",
+  "btn_main_menu": "📋 Главное меню"
+}

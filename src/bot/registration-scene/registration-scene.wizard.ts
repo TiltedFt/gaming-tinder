@@ -21,9 +21,9 @@ import { isSupportedLanguage } from 'src/common/utils/utils';
 import type { BotWizardContext } from 'src/interfaces/context.interface';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { ProfileService } from 'src/user/profile/profile.service';
-import { languageKeyboard } from './components/language-keyboard.component';
 import { I18nKey } from 'src/i18n/i18n-keys';
 import { BotError } from 'src/common/errors/bot-error';
+import { LanguageKeyboardComponent } from '../components/language-keyboard.component';
 
 @Wizard(REGISTRATION_WIZARD_SCENE)
 @UseFilters(TelegrafExceptionFilter)
@@ -31,13 +31,14 @@ export class RegistrationScene {
   constructor(
     private readonly profileService: ProfileService,
     private readonly i18n: I18nService,
+    private readonly languageKeyboard: LanguageKeyboardComponent,
   ) {}
 
   @WizardStep(1)
   async onSceneEnter(@Ctx() ctx: BotWizardContext) {
     const lang = this.detectLanguage(ctx);
     const message = this.getLanguagePrompt(lang);
-    await ctx.reply(message, languageKeyboard());
+    await ctx.reply(message, this.languageKeyboard.render());
     await ctx.wizard.next();
   }
 
@@ -88,7 +89,7 @@ export class RegistrationScene {
     @Sender('username') telegramUsername: string | undefined,
   ) {
     const language = ctx.wizard.state['language'];
-    
+
     if (publicUsername === '/start') {
       await ctx.scene.leave();
       return;

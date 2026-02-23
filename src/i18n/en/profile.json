@@ -1,1 +1,25 @@
-{}
+{
+  "card_title": "👤 {publicUsername}",
+  "description": "📝 About: {value}",
+  "age": "🎂 Age: {value}",
+  "gender": "⚧ Gender: {value}",
+  "games": "🎮 Games: {value}",
+  "has_mic": "🎤 Microphone: {value}",
+  "communication": "💬 Communication: {value}",
+  "not_set": "not set",
+  "no_games": "none selected",
+  "mic_yes": "yes",
+  "mic_no": "no",
+  "gender_male": "male",
+  "gender_female": "female",
+  "gender_other": "other",
+  "onboarding_message": "Here's your profile! It's a bit empty — fill it out to increase your chances of finding the perfect teammate!",
+  "btn_description": "📝 About",
+  "btn_age": "🎂 Age",
+  "btn_gender": "⚧ Gender",
+  "btn_games": "🎮 Games",
+  "btn_mic": "🎤 Microphone",
+  "btn_communication": "💬 Communication",
+  "btn_search": "🔍 Start searching",
+  "btn_main_menu": "📋 Main menu"
+}

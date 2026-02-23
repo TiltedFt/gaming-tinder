@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { MainMenuSceneService } from './main-menu-scene.service';
+import { MainMenuSceneService } from './main-menu-scene.scene';
 
 @Module({
   providers: [MainMenuSceneService],
