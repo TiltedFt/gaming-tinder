@@ -23,6 +23,7 @@ import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { ProfileService } from 'src/user/profile/profile.service';
 import { languageKeyboard } from './components/language-keyboard.component';
 import { I18nKey } from 'src/i18n/i18n-keys';
+import { PublicUsernameTakenError } from 'src/common/errors/public-username-taken.error';
 
 @Wizard(REGISTRATION_WIZARD_SCENE)
 @UseFilters(TelegrafExceptionFilter)
@@ -34,23 +35,27 @@ export class RegistrationScene {
 
   @WizardStep(1)
   async onSceneEnter(@Ctx() ctx: BotWizardContext) {
-    const lang = ctx.from?.language_code
-      ? ctx.from?.language_code
-      : Language.ENGLISH;
+    const lang = this.detectLanguage(ctx);
+    const message = this.getLanguagePrompt(lang);
+    await ctx.reply(message, languageKeyboard());
+    await ctx.wizard.next();
+  }
 
-    const isSupported = isSupportedLanguage(lang);
+  private detectLanguage(ctx: BotWizardContext): Language {
+    const code = ctx.from?.language_code;
+    return code && isSupportedLanguage(code) ? code : Language.ENGLISH;
+  }
 
-    const message = isSupported
+  private getLanguagePrompt(lang: string): string {
+    return isSupportedLanguage(lang)
       ? this.i18n.t(I18nKey.LANGUAGE_FOUND, {
           lang,
           args: { language: lang.toUpperCase() },
         })
-      : this.i18n.t(I18nKey.LANGUAGE_NOT_FOUND, { lang: 'en' });
-
-    await ctx.reply(message, languageKeyboard());
-
-    await ctx.wizard.next();
+      : this.i18n.t(I18nKey.LANGUAGE_NOT_FOUND, { lang: Language.ENGLISH });
   }
+
+  
 
   @Action(/^lang_(.+)$/)
   @WizardStep(2)
@@ -72,38 +77,63 @@ export class RegistrationScene {
     @Sender('username') telegramUsername: string | undefined,
   ) {
     const language = ctx.wizard.state['language'];
-    publicUsername = publicUsername.trim();
 
-    const isValid = /^[a-zA-Z0-9_.\-]{3,30}$/.test(publicUsername);
+    if (publicUsername == '/start') {
+      return;
+    }
 
-    if (!isValid) {
+    const data = this.createDtoInstance(
+      telegramId,
+      publicUsername,
+      telegramUsername,
+      language,
+    );
+
+    const errors = await validate(data);
+    if (errors.length) {
       await ctx.reply(
         this.i18n.t(I18nKey.INVALID_PUBLIC_USERNAME, {
           lang: language,
         }),
       );
+
       return;
     }
 
-    const data = plainToInstance(CreateUserDto, {
+    try {
+      const user = await this.registerUser(data);
+
+      ctx.dbUser = user;
+      await ctx.reply(
+        this.i18n.t(I18nKey.REGISTRATION_SUCCESS, { lang: language }),
+      );
+      await ctx.scene.enter(MAIN_MENU_SCENE);
+    } catch (error) {
+      if (error instanceof PublicUsernameTakenError) {
+        await ctx.reply(
+          this.i18n.t(I18nKey.USERNAME_TAKEN, {
+            lang: language,
+          }),
+        );
+
+        return;
+      }
+      throw error;
+    }
+  }
+
+  private createDtoInstance(
+    telegramId: number,
+    publicUsername: string,
+    telegramUsername: string | undefined,
+    language: Language,
+  ) {
+    return plainToInstance(CreateUserDto, {
       telegramId,
       publicUsername,
       telegramUsername,
       language,
     });
-
-    const errors = await validate(data);
-    if (errors.length) {
-      throw new Error();
-    }
-
-    const user = await this.registerUser(data);
-
-    ctx.dbUser = user;
-    await ctx.reply(
-      this.i18n.t(I18nKey.REGISTRATION_SUCCESS, { lang: language }),
-    );
-    await ctx.scene.enter(MAIN_MENU_SCENE);
   }
 
   private async registerUser(userDto: CreateUserDto) {

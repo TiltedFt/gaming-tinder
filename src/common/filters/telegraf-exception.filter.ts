@@ -11,6 +11,7 @@ import type {
 import { Language } from '../constants/supported-language';
 import { BotError } from '../errors/bot-error';
 import { I18nKey } from 'src/i18n/i18n-keys';
+import { MAIN_MENU_SCENE } from '../constants/app-constants';
 
 @Catch()
 export class TelegrafExceptionFilter implements ExceptionFilter {
@@ -19,18 +20,6 @@ export class TelegrafExceptionFilter implements ExceptionFilter {
     @InjectBot() private readonly bot: Telegraf<Context>,
     private readonly configService: ConfigService,
   ) {}
-
-  private getLang(ctx: Context) {
-    if (ctx.dbUser?.language) return ctx.dbUser.language;
-
-    if ('wizard' in ctx) {
-      const wizardCtx = ctx as BotWizardContext;
-      const lang = wizardCtx.wizard?.state?.['language'];
-      if (lang) return lang;
-    }
-    // fallback
-    return Language.ENGLISH;
-  }
 
   async catch(exception: Error, host: ArgumentsHost) {
     const ctx = TelegrafArgumentsHost.create(host).getContext<Context>();
@@ -48,6 +37,26 @@ export class TelegrafExceptionFilter implements ExceptionFilter {
 
     await ctx.reply(this.i18n.t(I18nKey.SOMETHING_WENT_WRONG, { lang }));
     await this.notifyAdmin(ctx, exception);
+
+    // in case if unknown error - leave the scene, otherwise it breaks flow
+    try {
+      await ctx.scene.leave();
+      await ctx.scene.enter(MAIN_MENU_SCENE);
+    } catch {
+      // well, we are fucked
+    }
+  }
+
+  private getLang(ctx: Context) {
+    if (ctx.dbUser?.language) return ctx.dbUser.language;
+
+    if ('wizard' in ctx) {
+      const wizardCtx = ctx as BotWizardContext;
+      const lang = wizardCtx.wizard?.state?.['language'];
+      if (lang) return lang;
+    }
+    // fallback
+    return Language.ENGLISH;
   }
 
   private async notifyAdmin(ctx: Context, exception: Error) {

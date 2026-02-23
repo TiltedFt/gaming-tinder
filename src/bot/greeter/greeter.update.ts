@@ -18,6 +18,7 @@ export class GreeterUpdate {
 
   @Start()
   async onStart(@Ctx() ctx: Context, @Sender('id') telegramId: number) {
+    console.log(ctx.from);
     const lang = ctx.from?.language_code || 'en';
     const user = await this.userService.findByTelegramId(telegramId);
 

@@ -56,10 +56,10 @@ import { Postgres } from '@telegraf/session/pg';
         path: path.join(process.cwd(), 'src', 'i18n'),
         watch: true,
       },
-      resolvers: [
+      /* resolvers: [
         new QueryResolver(['lang']), // ?lang=ru for web
         new AcceptLanguageResolver(), // Accept-Language header
-      ],
+      ], */
     }),
     UserModule,
     BotModule,
