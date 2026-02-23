@@ -1,5 +1,4 @@
 import { CustomBaseEntity } from 'src/common/base-entity';
-import { GamingPlatform } from 'src/gaming-platform/entity/gaming-platform.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
@@ -14,4 +13,13 @@ export class Game extends CustomBaseEntity {
   @ManyToMany(() => GamingPlatform, (platform) => platform.games)
   @JoinTable()
   platforms: GamingPlatform[];
+}
+
+@Entity()
+export class GamingPlatform extends CustomBaseEntity {
+  @Column({ type: 'varchar' })
+  name: string; //ex PS5, PS4 and so on
+
+  @ManyToMany(() => Game, (game) => game.platforms)
+  games: Game[];
 }

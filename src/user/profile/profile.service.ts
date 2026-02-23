@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { CreateUserDto } from '../../user/dto/create-user.dto';
+import { PublicUsernameTakenError } from 'src/common/errors/public-username-taken.error';
 
 @Injectable()
 export class ProfileService {
@@ -10,13 +11,11 @@ export class ProfileService {
     const user = await this.userService.findByPublicUsername(
       userDto.publicUsername,
     );
-    if (user) {
-      throw new Error();
-    }
-    return this.userService.create(userDto);
-  }
 
-  findMeByPublicUsername(publicUsername: string) {
-    return this.userService.findByPublicUsername(publicUsername);
+    if (user) {
+      throw new PublicUsernameTakenError(userDto.publicUsername);
+    }
+
+    return this.userService.create(userDto);
   }
 }

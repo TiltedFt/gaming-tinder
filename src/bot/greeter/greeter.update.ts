@@ -7,6 +7,7 @@ import {
   REGISTRATION_WIZARD_SCENE,
   MAIN_MENU_SCENE,
 } from 'src/common/constants/app-constants';
+import { I18nKey } from 'src/i18n/i18n-keys';
 
 @Update()
 export class GreeterUpdate {
@@ -21,7 +22,8 @@ export class GreeterUpdate {
     const user = await this.userService.findByTelegramId(telegramId);
 
     if (!user) {
-      await ctx.reply(this.i18n.t('greeter.welcome_new', { lang }));
+      await ctx.reply(this.i18n.t(I18nKey.WELCOME_NEW_USER, { lang }));
+
       await ctx.scene.enter(REGISTRATION_WIZARD_SCENE);
     } else {
       ctx.dbUser = user;
