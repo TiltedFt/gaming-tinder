@@ -24,6 +24,7 @@ import { ProfileService } from 'src/user/profile/profile.service';
 import { languageKeyboard } from './components/language-keyboard.component';
 import { I18nKey } from 'src/i18n/i18n-keys';
 import { PublicUsernameTakenError } from 'src/common/errors/public-username-taken.error';
+import { BotError } from 'src/common/errors/bot-error';
 
 @Wizard(REGISTRATION_WIZARD_SCENE)
 @UseFilters(TelegrafExceptionFilter)
@@ -55,18 +56,29 @@ export class RegistrationScene {
       : this.i18n.t(I18nKey.LANGUAGE_NOT_FOUND, { lang: Language.ENGLISH });
   }
 
-  
-
-  @Action(/^lang_(.+)$/)
   @WizardStep(2)
   async onLanguageSelected(@Ctx() ctx: BotWizardContext) {
-    const lang = (ctx as any).match[1]; // en, ru
-    // only for exception filter on this step :)
+    if (!ctx.callbackQuery || !('data' in ctx.callbackQuery)) {
+      await ctx.reply(
+        this.i18n.t(I18nKey.PLEASE_USE_BUTTONS, { lang: Language.ENGLISH }),
+      );
+      return;
+    }
+
+    if (ctx.wizard.state['language']) {
+      await ctx.answerCbQuery();
+      return;
+    }
+
+    const match = ctx.callbackQuery.data.match(/^lang_(.+)$/);
+    if (!match) return;
+
+    const lang = match[1];
     ctx.wizard.state['language'] = lang;
 
     await ctx.answerCbQuery();
     await ctx.reply(this.i18n.t(I18nKey.ASK_PUBLIC_USERNAME, { lang }));
-    await ctx.wizard.next();
+    ctx.wizard.next();
   }
 
   @WizardStep(3)
@@ -78,65 +90,55 @@ export class RegistrationScene {
   ) {
     const language = ctx.wizard.state['language'];
 
-    if (publicUsername == '/start') {
-      return;
-    }
+    if (!language) return this.handleExpiredSession(ctx);
+    if (!publicUsername) return this.askForText(ctx, language);
 
-    const data = this.createDtoInstance(
+    const dto = plainToInstance(CreateUserDto, {
       telegramId,
       publicUsername,
-      telegramUsername,
+      telegramUsername: telegramUsername ?? null,
       language,
+    });
+
+    const errors = await validate(dto);
+    if (errors.length) return this.askForValidUsername(ctx, language);
+
+    await this.completeRegistration(ctx, dto, language);
+  }
+
+  private async handleExpiredSession(ctx: BotWizardContext) {
+    await ctx.reply(
+      this.i18n.t(I18nKey.SESSION_EXPIRED, { lang: Language.ENGLISH }),
     );
+    await ctx.scene.reenter();
+  }
 
-    const errors = await validate(data);
-    if (errors.length) {
-      await ctx.reply(
-        this.i18n.t(I18nKey.INVALID_PUBLIC_USERNAME, {
-          lang: language,
-        }),
-      );
+  private async askForText(ctx: BotWizardContext, lang: string) {
+    await ctx.reply(this.i18n.t(I18nKey.TEXT_ONLY_PLEASE, { lang }));
+  }
 
-      return;
-    }
+  private async askForValidUsername(ctx: BotWizardContext, lang: string) {
+    await ctx.reply(this.i18n.t(I18nKey.INVALID_PUBLIC_USERNAME, { lang }));
+  }
 
+  private async completeRegistration(
+    ctx: BotWizardContext,
+    dto: CreateUserDto,
+    lang: string,
+  ) {
     try {
-      const user = await this.registerUser(data);
-
+      const user = await this.profileService.createUserProfile(dto);
       ctx.dbUser = user;
-      await ctx.reply(
-        this.i18n.t(I18nKey.REGISTRATION_SUCCESS, { lang: language }),
-      );
+      await ctx.reply(this.i18n.t(I18nKey.REGISTRATION_SUCCESS, { lang }));
       await ctx.scene.enter(MAIN_MENU_SCENE);
     } catch (error) {
-      if (error instanceof PublicUsernameTakenError) {
+      if (error instanceof BotError) {
         await ctx.reply(
-          this.i18n.t(I18nKey.USERNAME_TAKEN, {
-            lang: language,
-          }),
+          this.i18n.t(error.i18nKey, { lang, args: error.i18nArgs }),
         );
-
         return;
       }
       throw error;
     }
-  }
-
-  private createDtoInstance(
-    telegramId: number,
-    publicUsername: string,
-    telegramUsername: string | undefined,
-    language: Language,
-  ) {
-    return plainToInstance(CreateUserDto, {
-      telegramId,
-      publicUsername,
-      telegramUsername,
-      language,
-    });
-  }
-
-  private async registerUser(userDto: CreateUserDto) {
-    return await this.profileService.createUserProfile(userDto);
   }
 }

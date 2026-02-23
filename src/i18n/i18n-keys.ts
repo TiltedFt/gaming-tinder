@@ -15,4 +15,7 @@ export enum I18nKey {
   USERNAME_TAKEN = 'user-error.duplicate_publicUsername',
   ACCOUNT_EXISTS = 'user-error.duplicate_telegramId',
   INVALID_PUBLIC_USERNAME = 'user-error.invalid_public_username',
+  PLEASE_USE_BUTTONS='user-error.please_use_buttons',
+  TEXT_ONLY_PLEASE='user-error.text_only_please',
+  SESSION_EXPIRED='user-error.session_expired'
 }
