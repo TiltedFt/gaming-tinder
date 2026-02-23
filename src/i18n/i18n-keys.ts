@@ -6,11 +6,13 @@ export enum I18nKey {
   LANGUAGE_FOUND = 'registration.language_found',
   LANGUAGE_NOT_FOUND = 'registration.language_not_found',
   ASK_PUBLIC_USERNAME = 'registration.ask_public_username',
-  INVALID_PUBLIC_USERNAME = 'registration.invalid_public_username',
   REGISTRATION_SUCCESS = 'registration.success',
 
-  // errors
-  SOMETHING_WENT_WRONG = 'errors.something_went_wrong',
-  USERNAME_TAKEN = 'errors.duplicate_publicUsername',
-  ACCOUNT_EXISTS = 'errors.duplicate_telegramId',
+  // server-errors
+  SOMETHING_WENT_WRONG = 'server-error.something_went_wrong',
+
+  // user-error
+  USERNAME_TAKEN = 'user-error.duplicate_publicUsername',
+  ACCOUNT_EXISTS = 'user-error.duplicate_telegramId',
+  INVALID_PUBLIC_USERNAME = 'user-error.invalid_public_username',
 }

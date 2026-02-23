@@ -3,6 +3,15 @@ import { User } from 'src/user/entities/user.entity';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
 @Entity()
+export class GamingPlatform extends CustomBaseEntity {
+  @Column({ type: 'varchar' })
+  name: string; //ex PS5, PS4 and so on
+
+  @ManyToMany(() => Game, (game) => game.platforms)
+  games: Game[];
+}
+
+@Entity()
 export class Game extends CustomBaseEntity {
   @Column({ type: 'varchar' })
   name: string;
@@ -13,13 +22,4 @@ export class Game extends CustomBaseEntity {
   @ManyToMany(() => GamingPlatform, (platform) => platform.games)
   @JoinTable()
   platforms: GamingPlatform[];
-}
-
-@Entity()
-export class GamingPlatform extends CustomBaseEntity {
-  @Column({ type: 'varchar' })
-  name: string; //ex PS5, PS4 and so on
-
-  @ManyToMany(() => Game, (game) => game.platforms)
-  games: Game[];
 }

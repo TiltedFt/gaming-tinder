@@ -2,14 +2,12 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TelegrafModule } from 'nestjs-telegraf';
-
 import { UserModule } from './user/user.module';
 import { session } from 'telegraf';
 import { I18nModule, QueryResolver, AcceptLanguageResolver } from 'nestjs-i18n';
 import * as path from 'path';
 import { BotModule } from './bot/bot.module';
 import { GameModule } from './game/game.module';
-import { GamingPlatformModule } from './gaming-platform/gaming-platform.module';
 import { Postgres } from '@telegraf/session/pg';
 
 @Module({
@@ -39,6 +37,7 @@ import { Postgres } from '@telegraf/session/pg';
         token: config.get<string>('BOT_TOKEN')!,
         middlewares: [
           session({
+            // this connection is to store session automatically
             store: Postgres({
               host: config.get('DATABASE_HOST'),
               port: config.get<number>('DATABASE_PORT'),
@@ -58,14 +57,13 @@ import { Postgres } from '@telegraf/session/pg';
         watch: true,
       },
       resolvers: [
-        new QueryResolver(['lang']), // ?lang=ru для веба
+        new QueryResolver(['lang']), // ?lang=ru for web
         new AcceptLanguageResolver(), // Accept-Language header
       ],
     }),
     UserModule,
     BotModule,
     GameModule,
-    GamingPlatformModule,
   ],
 })
 export class AppModule {}

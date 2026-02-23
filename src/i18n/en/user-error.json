@@ -1,0 +1,5 @@
+{
+  "invalid_public_username": "Username must be 3-30 characters. Only letters, numbers, _ . - are allowed.\n\nExamples: Cool_Player, Gigachad.2026, Pro-Gamer_99",
+  "duplicate_publicUsername": "Username {username} is already taken. Think of another one!",
+  "duplicate_telegramId": "You already have an account. If not, notifiy administration. They will take care of this issue!"
+}
