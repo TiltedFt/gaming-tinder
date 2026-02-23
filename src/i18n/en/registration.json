@@ -1,6 +1,5 @@
 {
   "language_found": "We detected that your profile language is {language}. If you'd like to change it, choose from the options below:",
   "language_not_found": "We couldn't detect your language. Please choose from the available options:",
-  "ask_public_username": "Type in your username for your profile. DON'T use your Telegram username - create a new one. It's for public. Use more than 3 and not more than 30 symbols in your username.",
-  "success": "Enjoy CrewFinder and find new Teammates!"
+  "ask_public_username": "Type in your username for your profile. DON'T use your Telegram username - create a new one. It's for public. Use more than 3 and not more than 30 symbols in your username."
 }

@@ -1,10 +1,10 @@
-import { Controller, Inject, UseFilters } from '@nestjs/common';
+import { UseFilters } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { I18nService } from 'nestjs-i18n';
 
 import {
-  Action,
+  Command,
   Ctx,
   Message,
   Sender,
@@ -23,7 +23,6 @@ import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { ProfileService } from 'src/user/profile/profile.service';
 import { languageKeyboard } from './components/language-keyboard.component';
 import { I18nKey } from 'src/i18n/i18n-keys';
-import { PublicUsernameTakenError } from 'src/common/errors/public-username-taken.error';
 import { BotError } from 'src/common/errors/bot-error';
 
 @Wizard(REGISTRATION_WIZARD_SCENE)
@@ -89,6 +88,11 @@ export class RegistrationScene {
     @Sender('username') telegramUsername: string | undefined,
   ) {
     const language = ctx.wizard.state['language'];
+    
+    if (publicUsername === '/start') {
+      await ctx.scene.leave();
+      return;
+    }
 
     if (!language) return this.handleExpiredSession(ctx);
     if (!publicUsername) return this.askForText(ctx, language);
@@ -121,6 +125,7 @@ export class RegistrationScene {
     await ctx.reply(this.i18n.t(I18nKey.INVALID_PUBLIC_USERNAME, { lang }));
   }
 
+  // show profile and suggest to customize it OR start searching
   private async completeRegistration(
     ctx: BotWizardContext,
     dto: CreateUserDto,
@@ -129,7 +134,7 @@ export class RegistrationScene {
     try {
       const user = await this.profileService.createUserProfile(dto);
       ctx.dbUser = user;
-      await ctx.reply(this.i18n.t(I18nKey.REGISTRATION_SUCCESS, { lang }));
+
       await ctx.scene.enter(MAIN_MENU_SCENE);
     } catch (error) {
       if (error instanceof BotError) {

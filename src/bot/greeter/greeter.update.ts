@@ -2,7 +2,6 @@ import { Ctx, Start, Update, Sender } from 'nestjs-telegraf';
 import type { Context } from '../../interfaces/context.interface';
 import { I18nService } from 'nestjs-i18n';
 import { UserService } from 'src/user/user.service';
-import { Inject } from '@nestjs/common';
 import {
   REGISTRATION_WIZARD_SCENE,
   MAIN_MENU_SCENE,
@@ -24,11 +23,11 @@ export class GreeterUpdate {
 
     if (!user) {
       await ctx.reply(this.i18n.t(I18nKey.WELCOME_NEW_USER, { lang }));
-
       await ctx.scene.enter(REGISTRATION_WIZARD_SCENE);
-    } else {
-      ctx.dbUser = user;
-      await ctx.scene.enter(MAIN_MENU_SCENE);
+      return;
     }
+    ctx.dbUser = user;
+    console.log(user);
+    await ctx.scene.enter(MAIN_MENU_SCENE);
   }
 }
