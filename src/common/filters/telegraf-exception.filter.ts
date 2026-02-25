@@ -48,7 +48,7 @@ export class TelegrafExceptionFilter implements ExceptionFilter {
   }
 
   private getLang(ctx: Context) {
-    if (ctx.dbUser?.language) return ctx.dbUser.language;
+    if (ctx.dbUser?.botLanguage) return ctx.dbUser.botLanguage;
 
     const wizard = (ctx as Record<string, any>).wizard;
     const lang = wizard?.state?.language;

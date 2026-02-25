@@ -36,7 +36,7 @@ export enum I18nKey {
   PROFILE_BTN_SEE_AS_OTHER_USER = 'profile.btn_see_as_other_user',
   PROFILE_EDIT_DESCRIPTION = 'profile.edit_description',
   PROFILE_EDIT_AGE = 'profile.edit_age',
-  PROFILE_EDIT_COMMUNICATION = 'profile.edit_age',
+  PROFILE_EDIT_COMMUNICATION = 'profile.edit_communication',
   PROFILE_EDIT_GENDER = 'profile.edit_gender',
 
   // server-errors

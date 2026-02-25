@@ -6,6 +6,6 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   description?: string;
   age?: number | null;
   avatarFileId?: string;
-  communication?: string;
+  preferredCommunicationWay?: string;
   gender?: Gender;
 }

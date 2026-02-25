@@ -6,18 +6,6 @@ import { BaseComponent } from '../../../common/base/base.component';
 import { Language } from 'src/common/constants/supported-language';
 import { Gender } from 'src/user/entities/user.entity';
 
-export enum ProfileAction {
-  EDIT_DESCRIPTION = 'profile_edit_description',
-  EDIT_AGE = 'profile_edit_age',
-  EDIT_GENDER = 'profile_edit_gender',
-  EDIT_GAMES = 'profile_edit_games',
-  EDIT_MIC = 'profile_edit_mic',
-  EDIT_AVATAR = 'profile_edit_avatar',
-  EDIT_COMMUNICATION = 'profile_edit_communication',
-  GO_SEARCH = 'profile_go_search',
-  GO_MAIN_MENU = 'profile_go_main_menu',
-}
-
 @Injectable()
 export class ProfileGenderKeyboard extends BaseComponent {
   constructor(i18n: I18nService) {

@@ -14,5 +14,5 @@ export class CreateUserDto {
   telegramUsername: string | null;
 
   @IsEnum(Language)
-  language: Language;
+  botLanguage: Language;
 }

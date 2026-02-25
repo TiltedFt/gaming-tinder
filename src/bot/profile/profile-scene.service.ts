@@ -127,9 +127,10 @@ export class ProfileSceneService {
         break;
       }
       case ProfileEditMethods.COMMUNICATION:
-        await this.updateAndRefreshUser(ctx, { communication: text });
-      case ProfileEditMethods.COMMUNICATION:
-        await this.updateAndRefreshUser(ctx, { communication: text });
+        await this.updateAndRefreshUser(ctx, {
+          preferredCommunicationWay: text,
+        });
+        break;
     }
   }
 
