@@ -24,5 +24,10 @@
   "btn_search": "🔍 Start searching",
   "btn_main_menu": "📋 Main menu",
   "btn_see_as_other_user": "See profile as other user",
-  "btn_avatar": "📷 Change profile picture"
+  "btn_avatar": "📷 Change profile picture",
+  "edit_description": "📝 Tell us shortly about yourself. What gamestyle do you prefer or what rank are you in specific game :)",
+  "edit_gender": "Choose gender of your profile:",
+  "edit_age": "Type in your age as numbers:",
+  "edit_communication": "Describe your preffered way to communicate. For example Discord, TeamSpeak or ingame chat",
+  "edit_avatar": "Upload your profile picture or even a short video!"
 }

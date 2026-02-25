@@ -5,6 +5,7 @@ import {
   REGISTRATION_WIZARD_SCENE,
   MAIN_MENU_SCENE,
   BotCommand,
+  PROFILE_SCENE,
 } from 'src/common/constants/app-constants';
 import { I18nKey } from 'src/i18n/i18n-keys';
 
@@ -28,7 +29,7 @@ export class CommandHandler {
 
   @Command(BotCommand.MENU)
   async onMenu(@Ctx() ctx: Context) {
-    await ctx.reply('menu command');
+    await ctx.scene.enter(MAIN_MENU_SCENE);
   }
 
   @Command(BotCommand.HELP)
@@ -38,7 +39,7 @@ export class CommandHandler {
 
   @Command(BotCommand.PROFILE)
   async onProfile(@Ctx() ctx: Context) {
-    await ctx.reply('menu command');
+    await ctx.scene.enter(PROFILE_SCENE);
   }
 
   @Command(BotCommand.SEARCH)

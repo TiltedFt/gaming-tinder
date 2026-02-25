@@ -21,7 +21,7 @@ export class MainMenuSceneService {
 
   @SceneEnter()
   async onSceneEnter(@Ctx() ctx: Context) {
-    const menu = this.mainMenuComponent.render(ctx.dbUser!.language);
+    const menu = this.mainMenuComponent.render(ctx.dbUser!.botLanguage);
     await ctx.reply('Menu Options:', menu);
   }
 

@@ -42,7 +42,7 @@ export class User extends CustomBaseEntity {
   games: Game[];
 
   @Column({ type: 'enum', enum: Language })
-  language: Language;
+  botLanguage: Language;
 
   @Column({ type: 'varchar', nullable: true })
   avatarFileId: string | null;

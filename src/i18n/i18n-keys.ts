@@ -34,6 +34,10 @@ export enum I18nKey {
   PROFILE_BTN_MAIN_MENU = 'profile.btn_main_menu',
   PROFILE_BTN_AVATAR = 'profile.btn_avatar',
   PROFILE_BTN_SEE_AS_OTHER_USER = 'profile.btn_see_as_other_user',
+  PROFILE_EDIT_DESCRIPTION = 'profile.edit_description',
+  PROFILE_EDIT_AGE = 'profile.edit_age',
+  PROFILE_EDIT_COMMUNICATION = 'profile.edit_age',
+  PROFILE_EDIT_GENDER = 'profile.edit_gender',
 
   // server-errors
   SOMETHING_WENT_WRONG = 'server-error.something_went_wrong',
@@ -45,6 +49,7 @@ export enum I18nKey {
   PLEASE_USE_BUTTONS = 'user-error.please_use_buttons',
   TEXT_ONLY_PLEASE = 'user-error.text_only_please',
   SESSION_EXPIRED = 'user-error.session_expired',
+  PROFILE_INVALID_AGE = 'user-error.invalid_age',
 
   // main-menu
   SHOW_MY_PROFILE = 'main-menu.show_my_profile',
