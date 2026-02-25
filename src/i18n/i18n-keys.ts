@@ -43,4 +43,14 @@ export enum I18nKey {
   PLEASE_USE_BUTTONS = 'user-error.please_use_buttons',
   TEXT_ONLY_PLEASE = 'user-error.text_only_please',
   SESSION_EXPIRED = 'user-error.session_expired',
+
+  // main-menu
+  SHOW_MY_PROFILE = 'main-menu.show_my_profile',
+  START_SEARCHING = 'main-menu.start_searching',
+
+  // common buttons
+  BACK = 'common-buttons.back',
+  ACCEPT = 'common-buttons.accept',
+  CANCEL = 'common-buttons.cancel',
+  SAVE = 'common-buttons.save',
 }

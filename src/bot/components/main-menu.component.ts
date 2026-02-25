@@ -1,0 +1,34 @@
+import { Injectable } from '@nestjs/common';
+import { I18nService } from 'nestjs-i18n';
+import { User } from 'src/user/entities/user.entity';
+import { BaseComponent } from './base.component';
+import { Language } from 'src/common/constants/supported-language';
+import { Markup } from 'telegraf';
+import { I18nKey } from 'src/i18n/i18n-keys';
+
+export enum MenuAction {
+  GO_TO_PROFILE = 'go_to_profile',
+  START_TO_SEARCH = 'start_to_search',
+}
+
+@Injectable()
+export class MainMenuComponent extends BaseComponent {
+  constructor(i18n: I18nService) {
+    super(i18n);
+  }
+
+  render(lang: Language) {
+    return Markup.inlineKeyboard([
+      [
+        Markup.button.callback(
+          this.t(I18nKey.SHOW_MY_PROFILE, lang),
+          MenuAction.GO_TO_PROFILE,
+        ),
+        Markup.button.callback(
+          this.t(I18nKey.START_SEARCHING, lang),
+          MenuAction.START_TO_SEARCH,
+        ),
+      ],
+    ]);
+  }
+}

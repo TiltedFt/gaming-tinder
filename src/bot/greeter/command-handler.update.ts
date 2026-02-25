@@ -9,7 +9,7 @@ import {
 import { I18nKey } from 'src/i18n/i18n-keys';
 
 @Update()
-export class GreeterUpdate {
+export class CommandHandler {
   constructor(
     private readonly userService: UserService,
     private readonly i18n: I18nService,
@@ -17,7 +17,6 @@ export class GreeterUpdate {
 
   @Start()
   async onStart(@Ctx() ctx: Context, @Sender('id') telegramId: number) {
-    console.log(ctx.from);
     const lang = ctx.from?.language_code || 'en';
     const user = await this.userService.findByTelegramId(telegramId);
 

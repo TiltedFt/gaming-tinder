@@ -25,6 +25,7 @@ import { I18nKey } from 'src/i18n/i18n-keys';
 import { BotError } from 'src/common/errors/bot-error';
 import { LanguageKeyboardComponent } from '../components/language-keyboard.component';
 
+// to do: inherit from BaseComponent!
 @Wizard(REGISTRATION_WIZARD_SCENE)
 @UseFilters(TelegrafExceptionFilter)
 export class RegistrationScene {

@@ -9,3 +9,7 @@ export const SUPPORTED_LANGUAGES = [
   { code: Language.ENGLISH, label: '🇬🇧 English' },
   { code: Language.RUSSIAN, label: '🇷🇺 Русский' },
 ] as const;
+
+export enum BotCommand {
+  START = '/start',
+}

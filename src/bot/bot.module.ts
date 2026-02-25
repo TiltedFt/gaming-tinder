@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { GreeterModule } from './greeter/greeter.module';
+import { CommandHandlerModule } from './greeter/command-handler.module';
 import { RegistrationSceneModule } from './registration-scene/registration-scene.module';
 import { MainMenuSceneModule } from './main-menu-scene/main-menu-scene.module';
 import { ComponentsModule } from './components/components.module';
 
 @Module({
   imports: [
-    GreeterModule,
+    CommandHandlerModule,
     RegistrationSceneModule,
     MainMenuSceneModule,
     ComponentsModule,

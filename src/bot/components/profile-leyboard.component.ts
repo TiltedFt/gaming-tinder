@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
 import { I18nKey } from 'src/i18n/i18n-keys';
 import { Markup } from 'telegraf';
+import { BaseComponent } from './base.component';
+import { Language } from 'src/common/constants/supported-language';
 
 export enum ProfileAction {
   EDIT_DESCRIPTION = 'profile_edit_description',
@@ -15,53 +17,52 @@ export enum ProfileAction {
 }
 
 @Injectable()
-export class ProfileKeyboardComponent {
-  constructor(private readonly i18n: I18nService) {}
+export class ProfileKeyboardComponent extends BaseComponent {
+  constructor(i18n: I18nService) {
+    super(i18n);
+  }
 
-  render(lang: string) {
-    const t = (key: string, args?: Record<string, unknown>): string =>
-      this.i18n.t(key, { lang, args }) as string;
-
+  render(lang: Language) {
     return Markup.inlineKeyboard([
       [
         Markup.button.callback(
-          t(I18nKey.PROFILE_BTN_DESCRIPTION),
+          this.t(I18nKey.PROFILE_BTN_DESCRIPTION, lang),
           ProfileAction.EDIT_DESCRIPTION,
         ),
       ],
       [
         Markup.button.callback(
-          t(I18nKey.PROFILE_BTN_AGE),
+          this.t(I18nKey.PROFILE_BTN_AGE, lang),
           ProfileAction.EDIT_AGE,
         ),
         Markup.button.callback(
-          t(I18nKey.PROFILE_BTN_GENDER),
+          this.t(I18nKey.PROFILE_BTN_GENDER, lang),
           ProfileAction.EDIT_GENDER,
         ),
       ],
       [
         Markup.button.callback(
-          t(I18nKey.PROFILE_BTN_GAMES),
+          this.t(I18nKey.PROFILE_BTN_GAMES, lang),
           ProfileAction.EDIT_GAMES,
         ),
         Markup.button.callback(
-          t(I18nKey.PROFILE_BTN_MIC),
+          this.t(I18nKey.PROFILE_BTN_MIC, lang),
           ProfileAction.EDIT_MIC,
         ),
       ],
       [
         Markup.button.callback(
-          t(I18nKey.PROFILE_BTN_COMMUNICATION),
+          this.t(I18nKey.PROFILE_BTN_COMMUNICATION, lang),
           ProfileAction.EDIT_COMMUNICATION,
         ),
       ],
       [
         Markup.button.callback(
-          t(I18nKey.PROFILE_BTN_SEARCH),
+          this.t(I18nKey.PROFILE_BTN_SEARCH, lang),
           ProfileAction.GO_SEARCH,
         ),
         Markup.button.callback(
-          t(I18nKey.PROFILE_BTN_MAIN_MENU),
+          this.t(I18nKey.PROFILE_BTN_MAIN_MENU, lang),
           ProfileAction.GO_MAIN_MENU,
         ),
       ],
