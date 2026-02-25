@@ -1,4 +1,4 @@
-import { CustomBaseEntity } from 'src/common/base-entity';
+import { CustomBaseEntity } from 'src/common/base/base-entity';
 import { Language } from 'src/common/constants/supported-language';
 import { Game } from 'src/game/entity/game.entity';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
@@ -43,6 +43,9 @@ export class User extends CustomBaseEntity {
 
   @Column({ type: 'enum', enum: Language })
   language: Language;
+
+  @Column({ type: 'varchar', nullable: true })
+  avatarFileId: string | null;
 
   /*   // in da future goes into redddiiiiiis
   @Column({type: 'boolean', default: false})

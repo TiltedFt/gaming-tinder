@@ -20,17 +20,17 @@ import { TelegrafExceptionFilter } from 'src/common/filters/telegraf-exception.f
 import { isSupportedLanguage } from 'src/common/utils/utils';
 import type { BotWizardContext } from 'src/interfaces/context.interface';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { ProfileService } from 'src/user/profile/profile.service';
 import { I18nKey } from 'src/i18n/i18n-keys';
 import { BotError } from 'src/common/errors/bot-error';
-import { LanguageKeyboardComponent } from '../components/language-keyboard.component';
+import { LanguageKeyboardComponent } from './components/language-keyboard.component';
+import { UserService } from 'src/user/user.service';
 
 // to do: inherit from BaseComponent!
 @Wizard(REGISTRATION_WIZARD_SCENE)
 @UseFilters(TelegrafExceptionFilter)
 export class RegistrationScene {
   constructor(
-    private readonly profileService: ProfileService,
+    private readonly userService: UserService,
     private readonly i18n: I18nService,
     private readonly languageKeyboard: LanguageKeyboardComponent,
   ) {}
@@ -134,7 +134,7 @@ export class RegistrationScene {
     lang: string,
   ) {
     try {
-      const user = await this.profileService.createUserProfile(dto);
+      const user = await this.userService.findOrCreate(dto);
       ctx.dbUser = user;
 
       await ctx.scene.enter(MAIN_MENU_SCENE);

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
@@ -9,6 +8,7 @@ import {
   isUniqueViolation,
 } from 'src/common/utils/pg-error';
 import { PublicUsernameTakenError } from 'src/common/errors/public-username-taken.error';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -16,6 +16,15 @@ export class UserService {
     @InjectRepository(User)
     private readonly repository: Repository<User>,
   ) {}
+
+  async updateAndReturn(id: string, data: Partial<User>) {
+    await this.repository.update(id, data);
+    return this.findById(id) as Promise<User>;
+  }
+
+  findById(id: string) {
+    return this.repository.findOneBy({ id });
+  }
 
   findByTelegramId(telegramId: number): Promise<User | null> {
     return this.repository.findOneBy({ telegramId: telegramId });

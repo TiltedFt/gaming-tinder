@@ -1,11 +1,12 @@
 {
   "card_title": "👤 {publicUsername}",
   "description": "📝 О себе: {value}",
+  "no_avatar": "📷 Аватарка отсутствует",
   "age": "🎂 Возраст: {value}",
   "gender": "⚧ Пол: {value}",
   "games": "🎮 Игры: {value}",
   "has_mic": "🎤 Микрофон: {value}",
-  "communication": "💬 Связь: {value}",
+  "communication": "💬 Метод связи: {value}",
   "not_set": "не указано",
   "no_games": "не выбраны",
   "mic_yes": "есть",
@@ -19,7 +20,9 @@
   "btn_gender": "⚧ Пол",
   "btn_games": "🎮 Игры",
   "btn_mic": "🎤 Микрофон",
-  "btn_communication": "💬 Связь",
+  "btn_communication": "💬 Метод связи",
   "btn_search": "🔍 Начать поиск",
-  "btn_main_menu": "📋 Главное меню"
+  "btn_main_menu": "📋 Главное меню",
+  "btn_see_as_other_user": "Просмотр профиля со сторы",
+  "btn_avatar": "📷 Поменять аватарку"
 }

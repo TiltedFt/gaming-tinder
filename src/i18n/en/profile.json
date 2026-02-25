@@ -1,11 +1,12 @@
 {
   "card_title": "👤 {publicUsername}",
   "description": "📝 About: {value}",
+  "no_avatar": "📷 No profile picture set",
   "age": "🎂 Age: {value}",
   "gender": "⚧ Gender: {value}",
   "games": "🎮 Games: {value}",
   "has_mic": "🎤 Microphone: {value}",
-  "communication": "💬 Communication: {value}",
+  "communication": "💬 Communication way: {value}",
   "not_set": "not set",
   "no_games": "none selected",
   "mic_yes": "yes",
@@ -19,7 +20,9 @@
   "btn_gender": "⚧ Gender",
   "btn_games": "🎮 Games",
   "btn_mic": "🎤 Microphone",
-  "btn_communication": "💬 Communication",
+  "btn_communication": "💬 Communication way",
   "btn_search": "🔍 Start searching",
-  "btn_main_menu": "📋 Main menu"
+  "btn_main_menu": "📋 Main menu",
+  "btn_see_as_other_user": "See profile as other user",
+  "btn_avatar": "📷 Change profile picture"
 }

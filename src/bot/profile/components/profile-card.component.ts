@@ -3,7 +3,7 @@ import { I18nService } from 'nestjs-i18n';
 import { User, Gender } from 'src/user/entities/user.entity';
 import { I18nKey } from 'src/i18n/i18n-keys';
 import { Language } from 'src/common/constants/supported-language';
-import { BaseComponent } from './base.component';
+import { BaseComponent } from '../../../common/base/base.component';
 
 @Injectable()
 export class ProfileCardComponent extends BaseComponent {
@@ -52,7 +52,7 @@ export class ProfileCardComponent extends BaseComponent {
 
   private resolveGames(user: User): string {
     if (!user.games?.length) {
-      return this.i18n.t(I18nKey.PROFILE_NO_GAMES, { lang: user.language });
+      return this.t(I18nKey.PROFILE_NO_GAMES, user.language);
     }
 
     return user.games.map((g) => g.name).join(', ');
@@ -60,6 +60,6 @@ export class ProfileCardComponent extends BaseComponent {
 
   private resolveMic(hasMic: boolean, lang: Language): string {
     const key = hasMic ? I18nKey.PROFILE_MIC_YES : I18nKey.PROFILE_MIC_NO;
-    return this.i18n.t(key, { lang });
+    return this.t(key, lang);
   }
 }

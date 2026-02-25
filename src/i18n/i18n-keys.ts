@@ -6,7 +6,6 @@ export enum I18nKey {
   LANGUAGE_FOUND = 'registration.language_found',
   LANGUAGE_NOT_FOUND = 'registration.language_not_found',
   ASK_PUBLIC_USERNAME = 'registration.ask_public_username',
-  REGISTRATION_SUCCESS = 'registration.success',
 
   // profile
   PROFILE_CARD_TITLE = 'profile.card_title',
@@ -23,6 +22,7 @@ export enum I18nKey {
   PROFILE_GENDER_MALE = 'profile.gender_male',
   PROFILE_GENDER_FEMALE = 'profile.gender_female',
   PROFILE_GENDER_OTHER = 'profile.gender_other',
+  PROFILE_NO_AVATAR = 'profile.no_avatar',
   PROFILE_ONBOARDING_MESSAGE = 'profile.onboarding_message',
   PROFILE_BTN_DESCRIPTION = 'profile.btn_description',
   PROFILE_BTN_AGE = 'profile.btn_age',
@@ -32,6 +32,8 @@ export enum I18nKey {
   PROFILE_BTN_COMMUNICATION = 'profile.btn_communication',
   PROFILE_BTN_SEARCH = 'profile.btn_search',
   PROFILE_BTN_MAIN_MENU = 'profile.btn_main_menu',
+  PROFILE_BTN_AVATAR = 'profile.btn_avatar',
+  PROFILE_BTN_SEE_AS_OTHER_USER = 'profile.btn_see_as_other_user',
 
   // server-errors
   SOMETHING_WENT_WRONG = 'server-error.something_went_wrong',

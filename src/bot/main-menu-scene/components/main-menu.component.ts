@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
 import { User } from 'src/user/entities/user.entity';
-import { BaseComponent } from './base.component';
+import { BaseComponent } from '../../../common/base/base.component';
 import { Language } from 'src/common/constants/supported-language';
 import { Markup } from 'telegraf';
 import { I18nKey } from 'src/i18n/i18n-keys';
