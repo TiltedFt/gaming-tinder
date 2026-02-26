@@ -32,11 +32,6 @@ export class CommandHandler {
     await ctx.scene.enter(MAIN_MENU_SCENE);
   }
 
-  @Command(BotCommand.HELP)
-  async onHelp(@Ctx() ctx: Context) {
-    await ctx.reply('menu command');
-  }
-
   @Command(BotCommand.PROFILE)
   async onProfile(@Ctx() ctx: Context) {
     await ctx.scene.enter(PROFILE_SCENE);
@@ -44,6 +39,11 @@ export class CommandHandler {
 
   @Command(BotCommand.SEARCH)
   async onSearch(@Ctx() ctx: Context) {
-    await ctx.reply('menu command');
+    await ctx.reply('menu command, working on it');
+  }
+
+  @Command(BotCommand.HELP)
+  async onHelp(@Ctx() ctx: Context) {
+    await ctx.reply('help command, working on it');
   }
 }

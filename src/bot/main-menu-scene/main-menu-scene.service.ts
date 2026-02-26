@@ -15,7 +15,7 @@ import { I18nKey } from 'src/i18n/i18n-keys';
 export class MainMenuSceneService {
   constructor(
     private readonly mainMenuComponent: MainMenuComponent,
-    private readonly i18n: I18nService, // ← добавить
+    private readonly i18n: I18nService,
   ) {}
 
   @SceneEnter()
@@ -26,5 +26,15 @@ export class MainMenuSceneService {
       this.i18n.t(I18nKey.MAIN_MENU_TITLE, { lang }) as string,
       menu,
     );
+  }
+
+  @Action(MenuAction.GO_TO_PROFILE)
+  async onGoToProfile(@Ctx() ctx: Context) {
+    ctx.scene.enter(PROFILE_SCENE);
+  }
+
+  @Action(MenuAction.START_TO_SEARCH)
+  async onStartToSearch(@Ctx() ctx: Context) {
+    await ctx.reply('Wokgin on it');
   }
 }

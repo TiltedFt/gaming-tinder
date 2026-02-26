@@ -13,11 +13,13 @@ import {
   ProfileKeyboardComponent,
 } from './components/profile-keyboard.component';
 import { UserService } from 'src/user/user.service';
-import { UpdateUserDto } from 'src/user/dto/update-user.dto';
+import { UpdateAgeDto, UpdateProfileDto } from 'src/user/dto/update-user.dto';
 import { I18nService } from 'nestjs-i18n';
 import { I18nKey } from 'src/i18n/i18n-keys';
 import { ProfileGenderKeyboard } from './components/profile-gender-keyboard.component';
 import { Gender } from 'src/user/entities/user.entity';
+import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
 
 @Scene(PROFILE_SCENE)
 export class ProfileSceneService {
@@ -41,7 +43,7 @@ export class ProfileSceneService {
       await ctx.scene.enter(REGISTRATION_WIZARD_SCENE);
       return;
     }
-    
+
     const text = this.profileCard.render(user);
     const keyboard = this.profileKeyboard.render(user.botLanguage);
 
@@ -172,14 +174,14 @@ export class ProfileSceneService {
     const { editing } = ctx.scene.state;
     if (!editing) return;
     // type safety
-
     switch (editing) {
       case ProfileEditMethods.DESCRIPTION:
         await this.updateAndRefreshUser(ctx, { description: text });
         break;
       case ProfileEditMethods.AGE: {
-        const age = Math.abs(Number(text));
-        if (isNaN(age) || age > 99) {
+        const dto = plainToInstance(UpdateAgeDto, { age: Number(text) });
+        const errors = await validate(dto);
+        if (errors.length) {
           await ctx.reply(
             this.i18n.t(I18nKey.PROFILE_INVALID_AGE, {
               lang: ctx.dbUser!.botLanguage,
@@ -187,7 +189,7 @@ export class ProfileSceneService {
           );
           return;
         }
-        await this.updateAndRefreshUser(ctx, { age });
+        await this.updateAndRefreshUser(ctx, { age: dto.age });
         break;
       }
       case ProfileEditMethods.COMMUNICATION:
@@ -198,7 +200,7 @@ export class ProfileSceneService {
     }
   }
 
-  private async updateAndRefreshUser(ctx: Context, data: UpdateUserDto) {
+  private async updateAndRefreshUser(ctx: Context, data: UpdateProfileDto) {
     ctx.dbUser = await this.userService.updateAndReturn(ctx.dbUser!.id, data);
     ctx.scene.state.editing = null;
     await this.refreshProfile(ctx, false);

@@ -4,7 +4,6 @@ import { validate } from 'class-validator';
 import { I18nService } from 'nestjs-i18n';
 
 import {
-  Command,
   Ctx,
   Message,
   Sender,
@@ -25,7 +24,6 @@ import { BotError } from 'src/common/errors/bot-error';
 import { LanguageKeyboardComponent } from './components/language-keyboard.component';
 import { UserService } from 'src/user/user.service';
 
-// to do: inherit from BaseComponent!
 @Wizard(REGISTRATION_WIZARD_SCENE)
 @UseFilters(TelegrafExceptionFilter)
 export class RegistrationScene {

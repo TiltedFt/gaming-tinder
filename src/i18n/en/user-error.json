@@ -5,5 +5,5 @@
   "please_use_buttons": "Please use one of the provided options by pushing the button with preffered language",
   "text_only_please": "Please reply only with plain text.",
   "session_expired": "Hi, haven't seen you in a long time!",
-  "invalid_age": "Okay now, chill. You are for sure not older than 100! Try again :)"
+  "invalid_age": "Your age must be a whole number between 1 and 99"
 }
