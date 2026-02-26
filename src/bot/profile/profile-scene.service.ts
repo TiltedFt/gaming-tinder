@@ -75,7 +75,7 @@ export class ProfileSceneService {
     if (ctx.scene.state.editing !== ProfileEditMethods.AVATAR) return;
 
     const photos = ctx.message!['photo'];
-    const fileId = photos[photos.length - 1].file_id; // берём максимальное разрешение
+    const fileId = photos[photos.length - 1].file_id; 
 
     await this.updateAndRefreshUser(ctx, { avatarFileId: fileId });
   }

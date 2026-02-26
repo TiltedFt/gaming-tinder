@@ -7,20 +7,3 @@ import { MainMenuComponent } from './components/main-menu.component';
   exports: [MainMenuComponent],
 })
 export class MainMenuSceneModule {}
-
-/* @Module({
-  providers: [
-    ProfileCardComponent,
-    ProfileKeyboardComponent,
-    LanguageKeyboardComponent,
-    MainMenuComponent,
-  ],
-  exports: [
-    ProfileCardComponent,
-    ProfileKeyboardComponent,
-    LanguageKeyboardComponent,
-    MainMenuComponent,
-  ],
-})
-export class ComponentsModule {}
- */
