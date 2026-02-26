@@ -38,6 +38,7 @@ export enum I18nKey {
   PROFILE_EDIT_AGE = 'profile.edit_age',
   PROFILE_EDIT_COMMUNICATION = 'profile.edit_communication',
   PROFILE_EDIT_GENDER = 'profile.edit_gender',
+  PROFILE_EDIT_AVATAR = 'profile.edit_avatar',
 
   // server-errors
   SOMETHING_WENT_WRONG = 'server-error.something_went_wrong',

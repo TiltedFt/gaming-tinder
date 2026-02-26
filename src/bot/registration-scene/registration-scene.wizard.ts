@@ -66,7 +66,7 @@ export class RegistrationScene {
       return;
     }
 
-    if (ctx.wizard.state['language']) {
+    if (ctx.wizard.state['botLanguage']) {
       await ctx.answerCbQuery();
       return;
     }
@@ -75,7 +75,7 @@ export class RegistrationScene {
     if (!match) return;
 
     const lang = match[1];
-    ctx.wizard.state['language'] = lang;
+    ctx.wizard.state['botLanguage'] = lang;
 
     await ctx.answerCbQuery();
     await ctx.reply(this.i18n.t(I18nKey.ASK_PUBLIC_USERNAME, { lang }));
@@ -89,7 +89,7 @@ export class RegistrationScene {
     @Sender('id') telegramId: number,
     @Sender('username') telegramUsername: string | undefined,
   ) {
-    const language = ctx.wizard.state['language'];
+    const language = ctx.wizard.state['botLanguage'];
 
     if (publicUsername === '/start') {
       await ctx.scene.leave();
@@ -103,7 +103,7 @@ export class RegistrationScene {
       telegramId,
       publicUsername,
       telegramUsername: telegramUsername ?? null,
-      language,
+      botLanguage: language,
     });
 
     const errors = await validate(dto);

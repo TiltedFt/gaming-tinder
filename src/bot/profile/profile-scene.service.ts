@@ -29,7 +29,8 @@ export class ProfileSceneService {
 
   @SceneEnter()
   async onSceneEnter(@Ctx() ctx: Context) {
-    await this.refreshProfile(ctx, true);
+    const isFromCallback = !!ctx.callbackQuery;
+    await this.refreshProfile(ctx, isFromCallback);
   }
 
   private async refreshProfile(ctx: Context, canEdit = false) {
@@ -38,10 +39,12 @@ export class ProfileSceneService {
     const keyboard = this.profileKeyboard.render(user.botLanguage);
 
     if (user.avatarFileId) {
-      await ctx.replyWithPhoto(user.avatarFileId, {
-        caption: text,
-        ...keyboard,
-      });
+      try {
+        await ctx.replyWithPhoto(user.avatarFileId);
+      } catch {
+        await ctx.replyWithVideo(user.avatarFileId);
+      }
+      await ctx.reply(text, keyboard);
       return;
     }
 
@@ -54,6 +57,35 @@ export class ProfileSceneService {
     } else {
       await ctx.reply(text, keyboard);
     }
+  }
+
+  @Action(ProfileAction.EDIT_AVATAR)
+  async editAvatar(@Ctx() ctx: Context) {
+    ctx.scene.state.editing = ProfileEditMethods.AVATAR;
+    await ctx.reply(
+      this.i18n.t(I18nKey.PROFILE_EDIT_AVATAR, {
+        lang: ctx.dbUser!.botLanguage,
+      }) as string,
+    );
+    await ctx.answerCbQuery();
+  }
+
+  @On('photo')
+  async onPhoto(@Ctx() ctx: Context) {
+    if (ctx.scene.state.editing !== ProfileEditMethods.AVATAR) return;
+
+    const photos = ctx.message!['photo'];
+    const fileId = photos[photos.length - 1].file_id; // берём максимальное разрешение
+
+    await this.updateAndRefreshUser(ctx, { avatarFileId: fileId });
+  }
+
+  @On('video')
+  async onVideo(@Ctx() ctx: Context) {
+    if (ctx.scene.state.editing !== ProfileEditMethods.AVATAR) return;
+
+    const fileId = ctx.message!['video'].file_id;
+    await this.updateAndRefreshUser(ctx, { avatarFileId: fileId });
   }
 
   @Action(ProfileAction.EDIT_DESCRIPTION)
