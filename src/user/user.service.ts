@@ -48,4 +48,11 @@ export class UserService {
       throw error;
     }
   }
+
+  findByIdWithGames(id: string): Promise<User | null> {
+    return this.repository.findOne({
+      where: { id },
+      relations: ['games'],
+    });
+  }
 }

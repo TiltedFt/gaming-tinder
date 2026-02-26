@@ -55,6 +55,7 @@ export enum I18nKey {
   // main-menu
   SHOW_MY_PROFILE = 'main-menu.show_my_profile',
   START_SEARCHING = 'main-menu.start_searching',
+  MAIN_MENU_TITLE = 'main-menu.title',
 
   // common buttons
   BACK = 'common-buttons.back',

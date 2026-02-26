@@ -1,7 +1,9 @@
 import { Action, Ctx, Hears, On, Scene, SceneEnter } from 'nestjs-telegraf';
 import {
+  MAIN_MENU_SCENE,
   PROFILE_SCENE,
   ProfileEditMethods,
+  REGISTRATION_WIZARD_SCENE,
 } from 'src/common/constants/app-constants';
 
 import type { Context } from '../../interfaces/context.interface';
@@ -34,7 +36,12 @@ export class ProfileSceneService {
   }
 
   private async refreshProfile(ctx: Context, canEdit = false) {
-    const user = ctx.dbUser!;
+    const user = await this.userService.findByIdWithGames(ctx.dbUser!.id);
+    if (!user) {
+      await ctx.scene.enter(REGISTRATION_WIZARD_SCENE);
+      return;
+    }
+    
     const text = this.profileCard.render(user);
     const keyboard = this.profileKeyboard.render(user.botLanguage);
 
@@ -42,7 +49,20 @@ export class ProfileSceneService {
       try {
         await ctx.replyWithPhoto(user.avatarFileId);
       } catch {
-        await ctx.replyWithVideo(user.avatarFileId);
+        try {
+          await ctx.replyWithVideo(user.avatarFileId);
+        } catch {
+          // this is a bit of a edge case, it might be, that telegram removes the file from their server
+          await this.userService.updateAndReturn(user.id, {
+            avatarFileId: null,
+          });
+
+          await ctx.reply(
+            this.i18n.t(I18nKey.PROFILE_NO_AVATAR, {
+              lang: user.botLanguage,
+            }) as string,
+          );
+        }
       }
       await ctx.reply(text, keyboard);
       return;
@@ -65,7 +85,7 @@ export class ProfileSceneService {
     await ctx.reply(
       this.i18n.t(I18nKey.PROFILE_EDIT_AVATAR, {
         lang: ctx.dbUser!.botLanguage,
-      }) as string,
+      }),
     );
     await ctx.answerCbQuery();
   }
@@ -75,7 +95,7 @@ export class ProfileSceneService {
     if (ctx.scene.state.editing !== ProfileEditMethods.AVATAR) return;
 
     const photos = ctx.message!['photo'];
-    const fileId = photos[photos.length - 1].file_id; 
+    const fileId = photos[photos.length - 1].file_id;
 
     await this.updateAndRefreshUser(ctx, { avatarFileId: fileId });
   }
@@ -91,28 +111,40 @@ export class ProfileSceneService {
   @Action(ProfileAction.EDIT_DESCRIPTION)
   async editDescription(@Ctx() ctx: Context) {
     ctx.scene.state.editing = ProfileEditMethods.DESCRIPTION;
-    await ctx.reply(this.i18n.t(I18nKey.PROFILE_EDIT_DESCRIPTION));
+    await ctx.reply(
+      this.i18n.t(I18nKey.PROFILE_EDIT_DESCRIPTION, {
+        lang: ctx.dbUser.botLanguage,
+      }),
+    );
     await ctx.answerCbQuery();
   }
 
   @Action(ProfileAction.EDIT_AGE)
   async editAge(@Ctx() ctx: Context) {
     ctx.scene.state.editing = ProfileEditMethods.AGE;
-    await ctx.reply(this.i18n.t(I18nKey.PROFILE_EDIT_AGE));
+    await ctx.reply(
+      this.i18n.t(I18nKey.PROFILE_EDIT_AGE, { lang: ctx.dbUser.botLanguage }),
+    );
     await ctx.answerCbQuery();
   }
 
   @Action(ProfileAction.EDIT_COMMUNICATION)
   async editCommunication(@Ctx() ctx: Context) {
     ctx.scene.state.editing = ProfileEditMethods.COMMUNICATION;
-    await ctx.reply(this.i18n.t(I18nKey.PROFILE_EDIT_COMMUNICATION));
+    await ctx.reply(
+      this.i18n.t(I18nKey.PROFILE_EDIT_COMMUNICATION, {
+        lang: ctx.dbUser.botLanguage,
+      }),
+    );
     await ctx.answerCbQuery();
   }
 
   @Action(ProfileAction.EDIT_GENDER)
   async editGender(@Ctx() ctx: Context) {
     await ctx.reply(
-      this.i18n.t(I18nKey.PROFILE_EDIT_GENDER) as string,
+      this.i18n.t(I18nKey.PROFILE_EDIT_GENDER, {
+        lang: ctx.dbUser.botLanguage,
+      }),
       this.profileGenderKeyboard.render(ctx.dbUser!.botLanguage),
     );
     await ctx.answerCbQuery();
@@ -170,6 +202,25 @@ export class ProfileSceneService {
     ctx.dbUser = await this.userService.updateAndReturn(ctx.dbUser!.id, data);
     ctx.scene.state.editing = null;
     await this.refreshProfile(ctx, false);
+  }
+
+  @Action(ProfileAction.GO_MAIN_MENU)
+  async goToMainMenu(@Ctx() ctx: Context) {
+    await ctx.scene.enter(MAIN_MENU_SCENE);
+    await ctx.answerCbQuery();
+  }
+
+  @Action(ProfileAction.EDIT_MIC)
+  async editMic(@Ctx() ctx: Context) {
+    const newValue = !ctx.dbUser.hasMic;
+    await this.updateAndRefreshUser(ctx, { hasMic: newValue });
+    await ctx.answerCbQuery();
+  }
+
+  @Action(ProfileAction.EDIT_GAMES)
+  async editGames(@Ctx() ctx: Context) {
+    await ctx.reply('in progress');
+    await ctx.answerCbQuery();
   }
 }
 
