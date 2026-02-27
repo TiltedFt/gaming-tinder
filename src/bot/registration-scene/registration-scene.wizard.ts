@@ -3,13 +3,7 @@ import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { I18nService } from 'nestjs-i18n';
 
-import {
-  Ctx,
-  Message,
-  Sender,
-  Wizard,
-  WizardStep,
-} from 'nestjs-telegraf';
+import { Ctx, Message, Sender, Wizard, WizardStep } from 'nestjs-telegraf';
 import {
   MAIN_MENU_SCENE,
   REGISTRATION_WIZARD_SCENE,
@@ -135,6 +129,9 @@ export class RegistrationScene {
       const user = await this.userService.findOrCreate(dto);
       ctx.dbUser = user;
 
+      await ctx.reply(
+        this.i18n.t(I18nKey.PROFILE_ONBOARDING_MESSAGE, { lang }),
+      );
       await ctx.scene.enter(MAIN_MENU_SCENE);
     } catch (error) {
       if (error instanceof BotError) {

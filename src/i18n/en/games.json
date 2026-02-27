@@ -12,8 +12,8 @@
   "search_no_results": "No games found for \"{query}\". Try a different name.",
   "search_results_title": "Found games for \"{query}\":\nTip: type in your other favourite game name too, you are currently in search menu.",
   "btn_add": "➕ {name}",
-  "game_added": "✅ {name} added!",
-  "game_removed": "🗑 {name} removed.",
+  "game_added": "✅ Game added!",
+  "game_removed": "🗑 Game removed.",
   "game_already_added": "You already have {name} in your list.",
   "game_limit_reached": "You can have up to {limit} games in your profile."
 }

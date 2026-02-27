@@ -53,16 +53,6 @@ export class GameService {
     return this.searchLocal(query, limit);
   }
 
-  private async getBestSimilarity(query: string): Promise<number> {
-    const result = await this.gameRepository
-      .createQueryBuilder('game')
-      .select('MAX(similarity(game.name, :query))', 'best')
-      .setParameter('query', query)
-      .getRawOne();
-
-    return parseFloat(result?.best ?? '0');
-  }
-
   async findByIds(ids: string[]): Promise<Game[]> {
     if (!ids.length) return [];
     return this.gameRepository.find({ where: { id: In(ids) } });

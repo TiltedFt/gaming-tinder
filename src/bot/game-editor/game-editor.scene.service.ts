@@ -17,6 +17,8 @@ import {
   REMOVE_PREFIX,
 } from './game-editor.constants';
 import { Game } from 'src/game/entity/game.entity';
+import { UseFilters } from '@nestjs/common';
+import { TelegrafExceptionFilter } from 'src/common/filters/telegraf-exception.filter';
 
 const GAMES_PER_PAGE = 10;
 const MAX_GAMES = 20;
@@ -28,6 +30,7 @@ enum GameEditorStep {
 }
 
 @Scene(GAME_EDITOR_SCENE)
+@UseFilters(TelegrafExceptionFilter)
 export class GameEditorSceneService {
   constructor(
     private readonly gameService: GameService,
@@ -141,13 +144,6 @@ export class GameEditorSceneService {
     await ctx.answerCbQuery();
   }
 
-  @Action(GameEditorAction.SEARCH_AGAIN)
-  async onSearchAgain(@Ctx() ctx: Context) {
-    ctx.scene.state.gameEditorStep = GameEditorStep.SEARCH;
-    await this.showSearchPrompt(ctx, ctx.dbUser!.botLanguage);
-    await ctx.answerCbQuery();
-  }
-
   private async showSearchPrompt(ctx: Context, lang: Language) {
     const backKeyboard = Markup.inlineKeyboard([
       [
@@ -219,11 +215,9 @@ export class GameEditorSceneService {
 
     if (added) {
       await this.refreshSearchResults(ctx);
-      await ctx.answerCbQuery(this.t(I18nKey.GAMES_ADDED, lang, { name: '' }));
+      await ctx.answerCbQuery(this.t(I18nKey.GAMES_ADDED, lang));
     } else {
-      await ctx.answerCbQuery(
-        this.t(I18nKey.GAMES_ALREADY_ADDED, lang, { name: '' }),
-      );
+      await ctx.answerCbQuery(this.t(I18nKey.GAMES_ALREADY_ADDED, lang));
     }
   }
 
