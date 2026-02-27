@@ -1,6 +1,6 @@
 import { CustomBaseEntity } from 'src/common/base/base-entity';
 import { User } from 'src/user/entities/user.entity';
-import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
+import { Column, Entity, ManyToMany } from 'typeorm';
 
 @Entity()
 export class Game extends CustomBaseEntity {
@@ -9,4 +9,10 @@ export class Game extends CustomBaseEntity {
 
   @ManyToMany(() => User, (user) => user.games)
   users: User[];
+
+  @Column({ type: 'varchar', nullable: true })
+  coverUrl: string | null;
+
+  @Column({ type: 'integer', unique: true })
+  rawgId: number;
 }

@@ -30,11 +30,13 @@ export class MainMenuSceneService {
 
   @Action(MenuAction.GO_TO_PROFILE)
   async onGoToProfile(@Ctx() ctx: Context) {
-    ctx.scene.enter(PROFILE_SCENE);
+    await ctx.answerCbQuery();
+    await ctx.scene.enter(PROFILE_SCENE);
   }
 
   @Action(MenuAction.START_TO_SEARCH)
   async onStartToSearch(@Ctx() ctx: Context) {
+    await ctx.answerCbQuery();
     await ctx.reply('Wokgin on it');
   }
 }

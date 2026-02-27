@@ -1,5 +1,6 @@
 import { Action, Ctx, Hears, On, Scene, SceneEnter } from 'nestjs-telegraf';
 import {
+  GAME_EDITOR_SCENE,
   MAIN_MENU_SCENE,
   PROFILE_SCENE,
   ProfileEditMethods,
@@ -221,7 +222,7 @@ export class ProfileSceneService {
 
   @Action(ProfileAction.EDIT_GAMES)
   async editGames(@Ctx() ctx: Context) {
-    await ctx.reply('in progress');
+    await ctx.scene.enter(GAME_EDITOR_SCENE);
     await ctx.answerCbQuery();
   }
 }

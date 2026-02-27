@@ -8,7 +8,7 @@ import {
   isUniqueViolation,
 } from 'src/common/utils/pg-error';
 import { PublicUsernameTakenError } from 'src/common/errors/public-username-taken.error';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateProfileDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -17,7 +17,7 @@ export class UserService {
     private readonly repository: Repository<User>,
   ) {}
 
-  async updateAndReturn(id: string, data: Partial<User>) {
+  async updateAndReturn(id: string, data: Partial<UpdateProfileDto>) {
     await this.repository.update(id, data);
     return this.findById(id) as Promise<User>;
   }

@@ -4,6 +4,7 @@ import { RegistrationSceneModule } from './registration-scene/registration-scene
 import { MainMenuSceneModule } from './main-menu-scene/main-menu-scene.module';
 import { UserModule } from 'src/user/user.module';
 import { ProfileSceneModule } from './profile/profile-scene.module';
+import { GameEditorSceneModule } from './game-editor/game-editor-scene.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { ProfileSceneModule } from './profile/profile-scene.module';
     RegistrationSceneModule,
     MainMenuSceneModule,
     ProfileSceneModule,
+    GameEditorSceneModule,
   ],
 })
 export class BotModule {}

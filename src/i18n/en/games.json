@@ -1,0 +1,21 @@
+{
+  "list_title": "🎮 Your games ({current}/{total}):",
+  "list_empty": "You haven't added any games yet.",
+  "btn_add_game": "➕ Add game",
+  "btn_remove": "❌ {name}",
+  "btn_back_to_profile": "⬅️ Back to profile",
+  "btn_back_to_list": "⬅️ Back to my games",
+  "btn_prev_page": "⬅️",
+  "btn_next_page": "➡️",
+  "btn_search_again": "🔍 Search more games",
+  "page_indicator": "{page}/{totalPages}",
+  "search_prompt": "🔍 Type the game name (or part of it):",
+  "search_no_results": "No games found for \"{query}\". Try a different name.",
+  "search_results_title": "Found games for \"{query}\":",
+  "btn_expand_search": "🌐 Can't find? Search online",
+  "btn_add": "➕ {name}",
+  "game_added": "✅ {name} added!",
+  "game_removed": "🗑 {name} removed.",
+  "game_already_added": "You already have {name} in your list.",
+  "game_limit_reached": "You can have up to {limit} games in your profile."
+}
