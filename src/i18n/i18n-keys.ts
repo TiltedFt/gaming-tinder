@@ -77,8 +77,6 @@ export enum I18nKey {
   GAMES_SEARCH_NO_RESULTS = 'games.search_no_results',
   GAMES_SEARCH_RESULTS_TITLE = 'games.search_results_title',
   GAMES_BTN_ADD_RESULT = 'games.btn_add',
-  GAMES_BTN_SEARCH_AGAIN = 'games.btn_search_again',
-  GAMES_BTN_EXPAND_SEARCH = 'games.btn_expand_search',
   GAMES_ADDED = 'games.game_added',
   GAMES_REMOVED = 'games.game_removed',
   GAMES_ALREADY_ADDED = 'games.game_already_added',

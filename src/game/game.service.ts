@@ -15,11 +15,13 @@ export class GameService {
     private readonly rawgClient: RawgClientService,
   ) {}
 
+  private fetchedQueries = new Set<string>();
+
   // ufffffffffff idk, just a chill coder
   async searchLocal(query: string, limit = 5): Promise<Game[]> {
     return this.gameRepository
       .createQueryBuilder('game')
-      .where('similarity(game.name, :query) > 0.15 OR game.name ILIKE :like', {
+      .where('similarity(game.name, :query) > 0.3 OR game.name ILIKE :like', {
         query,
         like: `%${query}%`,
       })
@@ -41,7 +43,24 @@ export class GameService {
   }
 
   async search(query: string, limit = 5): Promise<Game[]> {
+    const cacheKey = query.toLowerCase().trim();
+
+    if (!this.fetchedQueries.has(cacheKey)) {
+      await this.fetchAndSaveFromApi(query, limit);
+      this.fetchedQueries.add(cacheKey);
+    }
+
     return this.searchLocal(query, limit);
+  }
+
+  private async getBestSimilarity(query: string): Promise<number> {
+    const result = await this.gameRepository
+      .createQueryBuilder('game')
+      .select('MAX(similarity(game.name, :query))', 'best')
+      .setParameter('query', query)
+      .getRawOne();
+
+    return parseFloat(result?.best ?? '0');
   }
 
   async findByIds(ids: string[]): Promise<Game[]> {

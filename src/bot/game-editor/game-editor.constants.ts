@@ -5,7 +5,6 @@ export enum GameEditorAction {
   SEARCH_AGAIN = 'ge_search_again',
   PREV_PAGE = 'ge_prev',
   NEXT_PAGE = 'ge_next',
-  EXPAND_SEARCH = 'ge_expand_search',
 }
 
 export const REMOVE_PREFIX = 'ge_rm_';

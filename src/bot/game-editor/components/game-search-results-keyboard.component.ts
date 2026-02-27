@@ -25,20 +25,6 @@ export class GameSearchResultsKeyboard extends BaseComponent {
 
     buttons.push([
       Markup.button.callback(
-        this.t(I18nKey.GAMES_BTN_SEARCH_AGAIN, lang),
-        GameEditorAction.SEARCH_AGAIN,
-      ),
-    ]);
-
-    buttons.push([
-      Markup.button.callback(
-        this.t(I18nKey.GAMES_BTN_EXPAND_SEARCH, lang),
-        GameEditorAction.EXPAND_SEARCH,
-      ),
-    ]);
-
-    buttons.push([
-      Markup.button.callback(
         this.t(I18nKey.GAMES_BTN_BACK_TO_LIST, lang),
         GameEditorAction.BACK_TO_LIST,
       ),

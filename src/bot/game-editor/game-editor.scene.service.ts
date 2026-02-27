@@ -16,6 +16,7 @@ import {
   GameEditorAction,
   REMOVE_PREFIX,
 } from './game-editor.constants';
+import { Game } from 'src/game/entity/game.entity';
 
 const GAMES_PER_PAGE = 10;
 const MAX_GAMES = 20;
@@ -100,43 +101,6 @@ export class GameEditorSceneService {
     await ctx.answerCbQuery();
   }
 
-  @Action(GameEditorAction.EXPAND_SEARCH)
-  async onExpandSearch(@Ctx() ctx: Context) {
-    const query = ctx.scene.state.lastSearchQuery as string | undefined;
-    if (!query) return;
-
-    const lang = ctx.dbUser!.botLanguage;
-
-    // get rawg and upsert that mf
-    await this.gameService.fetchAndSaveFromApi(query, 5);
-
-    // look again locally
-    const results = await this.gameService.searchLocal(query, 5);
-    ctx.scene.state.lastSearchResults = results.map((g) => g.id);
-
-    const userGames = await this.gameService.getUserGames(ctx.dbUser!.id);
-    const userGameIds = new Set(userGames.map((g) => g.id));
-
-    const keyboard = this.gameSearchResultsKeyboard.render(
-      results,
-      userGameIds,
-      lang,
-    );
-
-    try {
-      await ctx.editMessageText(
-        this.t(I18nKey.GAMES_SEARCH_RESULTS_TITLE, lang, { query }),
-        keyboard,
-      );
-    } catch {
-      await ctx.reply(
-        this.t(I18nKey.GAMES_SEARCH_RESULTS_TITLE, lang, { query }),
-        keyboard,
-      );
-    }
-    await ctx.answerCbQuery();
-  }
-
   @Action(new RegExp(`^${REMOVE_PREFIX}`))
   async onRemoveGame(@Ctx() ctx: Context) {
     if (!ctx.callbackQuery || !('data' in ctx.callbackQuery)) return;
@@ -198,17 +162,20 @@ export class GameEditorSceneService {
 
   @On('text')
   async onText(@Ctx() ctx: Context) {
-    if (ctx.scene.state.gameEditorStep !== GameEditorStep.SEARCH) return;
+    const step = ctx.scene.state.gameEditorStep;
+    if (step !== GameEditorStep.SEARCH && step !== GameEditorStep.RESULTS)
+      return;
     if (!('text' in ctx.message!)) return;
 
     const query = ctx.message.text;
     if (query.startsWith('/')) return;
 
+    // остаёмся в RESULTS но принимаем новый текст
     const lang = ctx.dbUser!.botLanguage;
     const results = await this.gameService.search(query, 5);
 
     if (!results.length) {
-      const backKeyboard = Markup.inlineKeyboard([
+      const keyboard = Markup.inlineKeyboard([
         [
           Markup.button.callback(
             this.t(I18nKey.GAMES_BTN_BACK_TO_LIST, lang),
@@ -218,13 +185,14 @@ export class GameEditorSceneService {
       ]);
       await ctx.reply(
         this.t(I18nKey.GAMES_SEARCH_NO_RESULTS, lang, { query }),
-        backKeyboard,
+        keyboard,
       );
       return;
     }
 
     ctx.scene.state.gameEditorStep = GameEditorStep.RESULTS;
     ctx.scene.state.lastSearchResults = results.map((g) => g.id);
+    ctx.scene.state.lastSearchQuery = query;
 
     const userGames = await this.gameService.getUserGames(ctx.dbUser!.id);
     const userGameIds = new Set(userGames.map((g) => g.id));
@@ -261,17 +229,19 @@ export class GameEditorSceneService {
 
   private async refreshSearchResults(ctx: Context) {
     const lang = ctx.dbUser!.botLanguage;
-    const lastResults = ctx.scene.state.lastSearchResults as
-      | string[]
-      | undefined;
+    const lastResults = ctx.scene.state.lastSearchResults;
     if (!lastResults?.length) return;
 
     const results = await this.gameService.findByIds(lastResults);
+    const ordered = lastResults
+      .map((id) => results.find((g) => g.id === id))
+      .filter(Boolean) as Game[];
+
     const userGames = await this.gameService.getUserGames(ctx.dbUser!.id);
     const userGameIds = new Set(userGames.map((g) => g.id));
 
     const keyboard = this.gameSearchResultsKeyboard.render(
-      results,
+      ordered,
       userGameIds,
       lang,
     );
@@ -279,10 +249,9 @@ export class GameEditorSceneService {
     try {
       await ctx.editMessageReplyMarkup(keyboard.reply_markup);
     } catch {
-      // well ...
+      // wellllll
     }
   }
-
   @Action(GameEditorAction.BACK_TO_LIST)
   async onBackToList(@Ctx() ctx: Context) {
     ctx.scene.state.gameEditorStep = GameEditorStep.LIST;
