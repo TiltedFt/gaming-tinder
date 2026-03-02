@@ -1,0 +1,55 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:16
+    container_name: database
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    volumes:
+      - pgdata:/var/lib/postgresql 
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app-dev:
+    build: .
+    container_name: telegram-bot-dev
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    # from my pc:to container files
+    volumes:
+      - ./src:/opt/app/src
+    # overrides CMD in Dockerfile
+    command: npm run start:dev
+    profiles:
+      - dev
+
+  app-prod:
+    build: .
+    container_name: telegram-bot-prod
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    profiles:
+      - prod
+
+volumes:
+  pgdata:
