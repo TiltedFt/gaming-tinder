@@ -169,7 +169,6 @@ export class GameEditorSceneService {
     // остаёмся в RESULTS но принимаем новый текст
     const lang = ctx.dbUser!.botLanguage;
     const results = await this.gameService.search(query, 5);
-
     if (!results.length) {
       const keyboard = Markup.inlineKeyboard([
         [

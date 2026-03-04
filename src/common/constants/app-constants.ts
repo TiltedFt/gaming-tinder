@@ -28,3 +28,7 @@ export enum ProfileEditMethods {
   MICROPHONE = 'microphone',
   COMMUNICATION = 'communication',
 }
+
+export enum BasicCommands {
+  CANCEL = 'cancel',
+}

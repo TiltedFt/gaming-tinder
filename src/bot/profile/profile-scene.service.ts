@@ -1,12 +1,13 @@
-import { Action, Ctx, Hears, On, Scene, SceneEnter } from 'nestjs-telegraf';
+import { Action, Ctx, On, Scene, SceneEnter } from 'nestjs-telegraf';
 import {
+  BasicCommands,
   GAME_EDITOR_SCENE,
   MAIN_MENU_SCENE,
   PROFILE_SCENE,
   ProfileEditMethods,
   REGISTRATION_WIZARD_SCENE,
 } from 'src/common/constants/app-constants';
-
+import { Markup } from 'telegraf';
 import type { Context } from '../../interfaces/context.interface';
 import { ProfileCardComponent } from './components/profile-card.component';
 import {
@@ -21,6 +22,7 @@ import { ProfileGenderKeyboard } from './components/profile-gender-keyboard.comp
 import { Gender } from 'src/user/entities/user.entity';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
+import { Language } from 'src/common/constants/supported-language';
 
 @Scene(PROFILE_SCENE)
 export class ProfileSceneService {
@@ -46,7 +48,7 @@ export class ProfileSceneService {
     }
 
     const text = this.profileCard.render(user);
-    const keyboard = this.profileKeyboard.render(user.botLanguage);
+    const keyboard = this.profileKeyboard.render(user.botLanguage, user.hasMic);
 
     if (user.avatarFileId) {
       try {
@@ -87,8 +89,16 @@ export class ProfileSceneService {
     ctx.scene.state.editing = ProfileEditMethods.AVATAR;
     await ctx.reply(
       this.i18n.t(I18nKey.PROFILE_EDIT_AVATAR, {
-        lang: ctx.dbUser!.botLanguage,
+        lang: ctx.dbUser.botLanguage,
       }),
+      Markup.inlineKeyboard([
+        Markup.button.callback(
+          this.i18n.t(I18nKey.CANCEL_AVATAR_UPLOAD, {
+            lang: ctx.dbUser.botLanguage,
+          }),
+          BasicCommands.CANCEL,
+        ),
+      ]),
     );
     await ctx.answerCbQuery();
   }
@@ -109,6 +119,12 @@ export class ProfileSceneService {
 
     const fileId = ctx.message!['video'].file_id;
     await this.updateAndRefreshUser(ctx, { avatarFileId: fileId });
+  }
+
+  @Action(BasicCommands.CANCEL)
+  async cancelAvatarUpload(@Ctx() ctx: Context) {
+    await ctx.answerCbQuery();
+    await this.refreshProfile(ctx);
   }
 
   @Action(ProfileAction.EDIT_DESCRIPTION)

@@ -22,7 +22,7 @@ export class ProfileKeyboardComponent extends BaseComponent {
     super(i18n);
   }
 
-  render(lang: Language) {
+  render(lang: Language, hasMic: boolean) {
     return Markup.inlineKeyboard([
       [
         Markup.button.callback(
@@ -50,7 +50,9 @@ export class ProfileKeyboardComponent extends BaseComponent {
           ProfileAction.EDIT_GAMES,
         ),
         Markup.button.callback(
-          this.t(I18nKey.PROFILE_BTN_MIC, lang),
+          this.t(I18nKey.PROFILE_BTN_MIC, lang, {
+            value: hasMic ? '✅' : '❌',
+          }),
           ProfileAction.EDIT_MIC,
         ),
       ],

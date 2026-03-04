@@ -52,7 +52,6 @@ export class RawgClientService {
         coverUrl: g.background_image,
       }));
     } catch (err) {
-      console.log(err);
       return [];
     }
   }

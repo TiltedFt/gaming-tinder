@@ -67,7 +67,7 @@ import { createAuthMiddleware } from './common/middlewares/auth.middleware';
     }),
     UserModule,
     BotModule,
-    GameModule,
+    GameModule
   ],
 })
 export class AppModule {}

@@ -3,7 +3,7 @@ services:
   db:
     image: postgres:16
     container_name: database
-    restart: always
+    restart: 'unless-stopped'
     ports:
       - '5432:5432'
     environment:
@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: ${DATABASE_NAME}
     volumes:
-      - pgdata:/var/lib/postgresql 
+      - pgdata:/var/lib/postgresql
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 5s
@@ -21,7 +21,7 @@ services:
   app-dev:
     build: .
     container_name: telegram-bot-dev
-    restart: unless-stopped
+    restart: 'unless-stopped'
     ports:
       - '3000:3000'
     depends_on:
@@ -34,13 +34,11 @@ services:
       - ./src:/opt/app/src
     # overrides CMD in Dockerfile
     command: npm run start:dev
-    profiles:
-      - dev
 
   app-prod:
     build: .
     container_name: telegram-bot-prod
-    restart: unless-stopped
+    restart: 'unless-stopped'
     ports:
       - '3000:3000'
     depends_on:
@@ -48,8 +46,16 @@ services:
         condition: service_healthy
     env_file:
       - .env
-    profiles:
-      - prod
+
+  app-test:
+    build: .
+    container_name: telegram-bot-test
+    restart: 'no'
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    command: npm run test
 
 volumes:
   pgdata:

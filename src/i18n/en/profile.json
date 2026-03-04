@@ -19,7 +19,7 @@
   "btn_age": "🎂 Age",
   "btn_gender": "⚧ Gender",
   "btn_games": "🎮 Games",
-  "btn_mic": "🎤 Microphone",
+  "btn_mic": "🎤 Microphone: {value}",
   "btn_communication": "💬 Communication way",
   "btn_search": "🔍 Start searching",
   "btn_main_menu": "📋 Main menu",
@@ -29,5 +29,6 @@
   "edit_gender": "Choose gender of your profile:",
   "edit_age": "Type in your age as numbers:",
   "edit_communication": "Describe your preffered way to communicate. For example Discord, TeamSpeak or ingame chat",
-  "edit_avatar": "Upload your profile picture or even a short video!"
+  "edit_avatar": "Upload your profile picture or even a short video!",
+  "cancel_avatar_upload": "Cancel"
 }

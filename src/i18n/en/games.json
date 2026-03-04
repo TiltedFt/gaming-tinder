@@ -10,7 +10,7 @@
   "page_indicator": "{page}/{totalPages}",
   "search_prompt": "🔍 Type the game name. You can search multiple times!",
   "search_no_results": "No games found for \"{query}\". Try a different name.",
-  "search_results_title": "Found games for \"{query}\":\nTip: type in your other favourite game name too, you are currently in search menu.",
+  "search_results_title": "Found games for \"{query}\":\nTip: type in your other favourite game name too, you are currently in search menu.\n\n(The list of games are Provided by Rawg.io API)",
   "btn_add": "➕ {name}",
   "game_added": "✅ Game added!",
   "game_removed": "🗑 Game removed.",

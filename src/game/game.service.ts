@@ -44,7 +44,6 @@ export class GameService {
 
   async search(query: string, limit = 5): Promise<Game[]> {
     const cacheKey = query.toLowerCase().trim();
-
     if (!this.fetchedQueries.has(cacheKey)) {
       await this.fetchAndSaveFromApi(query, limit);
       this.fetchedQueries.add(cacheKey);

@@ -39,6 +39,7 @@ export enum I18nKey {
   PROFILE_EDIT_COMMUNICATION = 'profile.edit_communication',
   PROFILE_EDIT_GENDER = 'profile.edit_gender',
   PROFILE_EDIT_AVATAR = 'profile.edit_avatar',
+  CANCEL_AVATAR_UPLOAD = 'profile.cancel_avatar_upload',
 
   // server-errors
   SOMETHING_WENT_WRONG = 'server-error.something_went_wrong',
