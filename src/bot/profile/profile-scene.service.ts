@@ -16,13 +16,12 @@ import {
 } from './components/profile-keyboard.component';
 import { UserService } from 'src/user/user.service';
 import { UpdateAgeDto, UpdateProfileDto } from 'src/user/dto/update-user.dto';
-import { I18nService } from 'nestjs-i18n';
+import { I18nHelper } from 'src/common/helper/i18n-helper/i18n.helper';
 import { I18nKey } from 'src/i18n/i18n-keys';
 import { ProfileGenderKeyboard } from './components/profile-gender-keyboard.component';
 import { Gender } from 'src/user/entities/user.entity';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
-import { Language } from 'src/common/constants/supported-language';
 import { UseFilters } from '@nestjs/common';
 import { TelegrafExceptionFilter } from 'src/common/filters/telegraf-exception.filter';
 
@@ -34,7 +33,7 @@ export class ProfileSceneService {
     private readonly profileKeyboard: ProfileKeyboardComponent,
     private readonly profileGenderKeyboard: ProfileGenderKeyboard,
     private readonly userService: UserService,
-    private readonly i18n: I18nService,
+    private readonly i18n: I18nHelper,
   ) {}
 
   @SceneEnter()
@@ -50,8 +49,9 @@ export class ProfileSceneService {
       return;
     }
 
+    const lang = user.botLanguage;
     const text = this.profileCard.render(user);
-    const keyboard = this.profileKeyboard.render(user.botLanguage, user.hasMic);
+    const keyboard = this.profileKeyboard.render(lang, user.hasMic);
 
     if (user.avatarFileId) {
       try {
@@ -60,16 +60,10 @@ export class ProfileSceneService {
         try {
           await ctx.replyWithVideo(user.avatarFileId);
         } catch {
-          // this is a bit of a edge case, it might be, that telegram removes the file from their server
           await this.userService.updateAndReturn(user.id, {
             avatarFileId: null,
           });
-
-          await ctx.reply(
-            this.i18n.t(I18nKey.PROFILE_NO_AVATAR, {
-              lang: user.botLanguage,
-            }) as string,
-          );
+          await ctx.reply(this.i18n.t(I18nKey.PROFILE_NO_AVATAR, lang));
         }
       }
       await ctx.reply(text, keyboard);
@@ -89,16 +83,13 @@ export class ProfileSceneService {
 
   @Action(ProfileAction.EDIT_AVATAR)
   async editAvatar(@Ctx() ctx: Context) {
+    const lang = ctx.dbUser!.botLanguage;
     ctx.scene.state.editing = ProfileEditMethods.AVATAR;
     await ctx.reply(
-      this.i18n.t(I18nKey.PROFILE_EDIT_AVATAR, {
-        lang: ctx.dbUser.botLanguage,
-      }),
+      this.i18n.t(I18nKey.PROFILE_EDIT_AVATAR, lang),
       Markup.inlineKeyboard([
         Markup.button.callback(
-          this.i18n.t(I18nKey.CANCEL_AVATAR_UPLOAD, {
-            lang: ctx.dbUser.botLanguage,
-          }),
+          this.i18n.t(I18nKey.CANCEL_AVATAR_UPLOAD, lang),
           ProfileCommands.CANCEL_AVATAR_UPLOAD,
         ),
       ]),
@@ -135,9 +126,7 @@ export class ProfileSceneService {
   async editDescription(@Ctx() ctx: Context) {
     ctx.scene.state.editing = ProfileEditMethods.DESCRIPTION;
     await ctx.reply(
-      this.i18n.t(I18nKey.PROFILE_EDIT_DESCRIPTION, {
-        lang: ctx.dbUser.botLanguage,
-      }),
+      this.i18n.t(I18nKey.PROFILE_EDIT_DESCRIPTION, ctx.dbUser!.botLanguage),
     );
     await ctx.answerCbQuery();
   }
@@ -146,7 +135,7 @@ export class ProfileSceneService {
   async editAge(@Ctx() ctx: Context) {
     ctx.scene.state.editing = ProfileEditMethods.AGE;
     await ctx.reply(
-      this.i18n.t(I18nKey.PROFILE_EDIT_AGE, { lang: ctx.dbUser.botLanguage }),
+      this.i18n.t(I18nKey.PROFILE_EDIT_AGE, ctx.dbUser!.botLanguage),
     );
     await ctx.answerCbQuery();
   }
@@ -155,20 +144,17 @@ export class ProfileSceneService {
   async editCommunication(@Ctx() ctx: Context) {
     ctx.scene.state.editing = ProfileEditMethods.COMMUNICATION;
     await ctx.reply(
-      this.i18n.t(I18nKey.PROFILE_EDIT_COMMUNICATION, {
-        lang: ctx.dbUser.botLanguage,
-      }),
+      this.i18n.t(I18nKey.PROFILE_EDIT_COMMUNICATION, ctx.dbUser!.botLanguage),
     );
     await ctx.answerCbQuery();
   }
 
   @Action(ProfileAction.EDIT_GENDER)
   async editGender(@Ctx() ctx: Context) {
+    const lang = ctx.dbUser!.botLanguage;
     await ctx.reply(
-      this.i18n.t(I18nKey.PROFILE_EDIT_GENDER, {
-        lang: ctx.dbUser.botLanguage,
-      }),
-      this.profileGenderKeyboard.render(ctx.dbUser!.botLanguage),
+      this.i18n.t(I18nKey.PROFILE_EDIT_GENDER, lang),
+      this.profileGenderKeyboard.render(lang),
     );
     await ctx.answerCbQuery();
   }
@@ -193,11 +179,10 @@ export class ProfileSceneService {
   async onText(@Ctx() ctx: Context) {
     if (!('text' in ctx.message!)) return;
     const text = ctx.message.text;
-    if (text.startsWith('/')) return;
 
     const { editing } = ctx.scene.state;
     if (!editing) return;
-    // type safety
+
     switch (editing) {
       case ProfileEditMethods.DESCRIPTION:
         await this.updateAndRefreshUser(ctx, { description: text });
@@ -207,9 +192,7 @@ export class ProfileSceneService {
         const errors = await validate(dto);
         if (errors.length) {
           await ctx.reply(
-            this.i18n.t(I18nKey.PROFILE_INVALID_AGE, {
-              lang: ctx.dbUser!.botLanguage,
-            }) as string,
+            this.i18n.t(I18nKey.PROFILE_INVALID_AGE, ctx.dbUser!.botLanguage),
           );
           return;
         }
@@ -256,6 +239,3 @@ export class ProfileSceneService {
     await ctx.answerCbQuery();
   }
 }
-
-//    await ctx.answerCbQuery();
-//    await ctx.answerCbQuery('Error!', { show_alert: true });

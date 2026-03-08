@@ -1,6 +1,6 @@
 import { Command, Ctx, Start, Update } from 'nestjs-telegraf';
 import type { Context } from 'src/interfaces/context.interface';
-import { I18nService } from 'nestjs-i18n';
+import { I18nHelper } from 'src/common/helper/i18n-helper/i18n.helper';
 import {
   REGISTRATION_WIZARD_SCENE,
   MAIN_MENU_SCENE,
@@ -8,18 +8,17 @@ import {
   PROFILE_SCENE,
 } from 'src/common/constants/app-constants';
 import { I18nKey } from 'src/i18n/i18n-keys';
+import { Language } from 'src/common/constants/supported-language';
 
 @Update()
 export class CommandHandler {
-  constructor(private readonly i18n: I18nService) {}
+  constructor(private readonly i18n: I18nHelper) {}
 
   @Start()
   async onStart(@Ctx() ctx: Context) {
     if (!ctx.dbUser) {
-      const lang = ctx.from?.language_code || 'en';
-      await ctx.reply(
-        this.i18n.t(I18nKey.WELCOME_NEW_USER, { lang }) as string,
-      );
+      const lang = (ctx.from?.language_code as Language) || Language.ENGLISH;
+      await ctx.reply(this.i18n.t(I18nKey.WELCOME_NEW_USER, lang));
       await ctx.scene.enter(REGISTRATION_WIZARD_SCENE);
       return;
     }

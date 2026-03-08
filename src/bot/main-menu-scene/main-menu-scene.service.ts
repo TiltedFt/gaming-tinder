@@ -9,7 +9,7 @@ import {
   MenuAction,
 } from './components/main-menu.component';
 import type { Context } from '../../interfaces/context.interface';
-import { I18nService } from 'nestjs-i18n';
+import { I18nHelper } from 'src/common/helper/i18n-helper/i18n.helper';
 import { I18nKey } from 'src/i18n/i18n-keys';
 import { UseFilters } from '@nestjs/common';
 import { TelegrafExceptionFilter } from 'src/common/filters/telegraf-exception.filter';
@@ -19,17 +19,14 @@ import { TelegrafExceptionFilter } from 'src/common/filters/telegraf-exception.f
 export class MainMenuSceneService {
   constructor(
     private readonly mainMenuComponent: MainMenuComponent,
-    private readonly i18n: I18nService,
+    private readonly i18n: I18nHelper,
   ) {}
 
   @SceneEnter()
   async onSceneEnter(@Ctx() ctx: Context) {
     const lang = ctx.dbUser!.botLanguage;
     const menu = this.mainMenuComponent.render(lang);
-    await ctx.reply(
-      this.i18n.t(I18nKey.MAIN_MENU_TITLE, { lang }) as string,
-      menu,
-    );
+    await ctx.reply(this.i18n.t(I18nKey.MAIN_MENU_TITLE, lang), menu);
   }
 
   @Action(MenuAction.GO_TO_PROFILE)

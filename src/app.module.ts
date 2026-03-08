@@ -11,6 +11,7 @@ import { GameModule } from './game/game.module';
 import { Postgres } from '@telegraf/session/pg';
 import { UserService } from './user/user.service';
 import { createAuthMiddleware } from './common/middlewares/auth.middleware';
+import { I18nHelperModule } from './common/helper/i18n-helper/i18n-helper.module';
 
 @Module({
   imports: [
@@ -65,9 +66,10 @@ import { createAuthMiddleware } from './common/middlewares/auth.middleware';
         new AcceptLanguageResolver(), // Accept-Language header
       ], */
     }),
+    I18nHelperModule,
     UserModule,
     BotModule,
-    GameModule
+    GameModule,
   ],
 })
 export class AppModule {}

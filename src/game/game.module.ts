@@ -16,7 +16,6 @@ import { I18nHelperModule } from 'src/common/helper/i18n-helper/i18n-helper.modu
   imports: [
     TypeOrmModule.forFeature([Game, User]),
     HttpModule,
-    I18nHelperModule,
   ],
   exports: [GameService, UserGameService],
 })

@@ -6,6 +6,7 @@ import {
 import type { Context } from 'src/interfaces/context.interface';
 import { GameService } from 'src/game/game.service';
 import { UserGameService } from 'src/game/user-game.service';
+import { I18nHelper } from 'src/common/helper/i18n-helper/i18n.helper';
 import { I18nKey } from 'src/i18n/i18n-keys';
 import { GameListKeyboard } from './components/game-list-keyboard.component';
 import { Markup } from 'telegraf';
@@ -19,7 +20,6 @@ import {
 import { Game } from 'src/game/entity/game.entity';
 import { UseFilters } from '@nestjs/common';
 import { TelegrafExceptionFilter } from 'src/common/filters/telegraf-exception.filter';
-import { I18nHelper } from 'src/common/helper/i18n-helper/i18n.helper';
 
 const GAMES_PER_PAGE = 10;
 const MAX_GAMES = 20;
@@ -76,7 +76,7 @@ export class GameEditorSceneService {
         await ctx.editMessageText(title, keyboard);
         return;
       } catch {
-        // Message not modified — user clicked too fast or content identical
+        // well :)
       }
     }
     await ctx.reply(title, keyboard);
@@ -161,8 +161,6 @@ export class GameEditorSceneService {
     if (!('text' in ctx.message!)) return;
 
     const query = ctx.message.text;
-    if (query.startsWith('/')) return;
-
     const lang = ctx.dbUser!.botLanguage;
     const results = await this.gameService.search(query, 5);
 
@@ -242,7 +240,7 @@ export class GameEditorSceneService {
     try {
       await ctx.editMessageReplyMarkup(keyboard.reply_markup);
     } catch {
-      // Message not modified — markup identical after add
+      // well :)
     }
   }
 
