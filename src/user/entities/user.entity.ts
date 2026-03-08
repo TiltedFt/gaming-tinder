@@ -1,12 +1,13 @@
 import { CustomBaseEntity } from 'src/common/base/base-entity';
-import { Language } from 'src/common/constants/supported-language';
 import { Game } from 'src/game/entity/game.entity';
+import { Language } from 'src/language/entities/language.entity';
 import {
   Column,
   Entity,
   JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   OneToOne,
 } from 'typeorm';
 
@@ -48,13 +49,18 @@ export class User extends CustomBaseEntity {
   @JoinTable()
   games: Game[];
 
-  @Column({ type: 'enum', enum: Language })
+  @ManyToMany(() => Language, (lang) => lang.users)
+  @JoinTable()
+  spokenLanguages: Language[];
+
+  @ManyToOne(() => Language, { eager: true })
+  @JoinColumn()
   botLanguage: Language;
+
+  get getBotLanguageCode(): string {
+    return this.botLanguage.code;
+  }
 
   @Column({ type: 'varchar', nullable: true })
   avatarFileId: string | null;
-
-  /*   // in da future goes into redddiiiiiis
-  @Column({type: 'boolean', default: false})
-  isActivelySearching: boolean; */
 }

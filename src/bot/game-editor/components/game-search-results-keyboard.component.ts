@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
 import { Markup } from 'telegraf';
 import { BaseComponent } from 'src/common/base/base.component';
-import { Language } from 'src/common/constants/supported-language';
 import { I18nKey } from 'src/i18n/i18n-keys';
 import { Game } from 'src/game/entity/game.entity';
 import { ADD_RESULT_PREFIX, GameEditorAction } from '../game-editor.constants';
@@ -13,7 +12,7 @@ export class GameSearchResultsKeyboard extends BaseComponent {
     super(i18n);
   }
 
-  render(results: Game[], userGameIds: Set<string>, lang: Language) {
+  render(results: Game[], userGameIds: Set<string>, lang: string) {
     const buttons: ReturnType<typeof Markup.button.callback>[][] = [];
 
     for (const game of results) {

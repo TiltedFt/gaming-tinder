@@ -12,6 +12,7 @@ import { Postgres } from '@telegraf/session/pg';
 import { UserService } from './user/user.service';
 import { createAuthMiddleware } from './common/middlewares/auth.middleware';
 import { I18nHelperModule } from './common/helper/i18n-helper/i18n-helper.module';
+import { LanguageModule } from './language/language.module';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { I18nHelperModule } from './common/helper/i18n-helper/i18n-helper.module
     UserModule,
     BotModule,
     GameModule,
+    LanguageModule,
   ],
 })
 export class AppModule {}

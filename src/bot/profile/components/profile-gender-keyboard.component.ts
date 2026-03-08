@@ -3,7 +3,6 @@ import { I18nService } from 'nestjs-i18n';
 import { I18nKey } from 'src/i18n/i18n-keys';
 import { Markup } from 'telegraf';
 import { BaseComponent } from '../../../common/base/base.component';
-import { Language } from 'src/common/constants/supported-language';
 import { Gender } from 'src/user/entities/user.entity';
 
 @Injectable()
@@ -12,7 +11,7 @@ export class ProfileGenderKeyboard extends BaseComponent {
     super(i18n);
   }
 
-  render(lang: Language) {
+  render(lang: string) {
     return Markup.inlineKeyboard([
       [
         Markup.button.callback(

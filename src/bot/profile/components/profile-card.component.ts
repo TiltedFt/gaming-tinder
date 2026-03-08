@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
 import { User, Gender } from 'src/user/entities/user.entity';
 import { I18nKey } from 'src/i18n/i18n-keys';
-import { Language } from 'src/common/constants/supported-language';
+
 import { BaseComponent } from '../../../common/base/base.component';
 
 @Injectable()
@@ -12,27 +12,29 @@ export class ProfileCardComponent extends BaseComponent {
   }
 
   render(user: User): string {
-    const notSet = this.t(I18nKey.PROFILE_NOT_SET, user.botLanguage);
+    const notSet = this.t(I18nKey.PROFILE_NOT_SET, user.getBotLanguageCode);
 
     const lines = [
-      this.t(I18nKey.PROFILE_CARD_TITLE, user.botLanguage, {
+      this.t(I18nKey.PROFILE_CARD_TITLE, user.getBotLanguageCode, {
         publicUsername: user.publicUsername,
       }),
       '',
-      this.t(I18nKey.PROFILE_DESCRIPTION, user.botLanguage, {
+      this.t(I18nKey.PROFILE_DESCRIPTION, user.getBotLanguageCode, {
         value: user.description ?? notSet,
       }),
-      this.t(I18nKey.PROFILE_AGE, user.botLanguage, { value: user.age ?? notSet }),
-      this.t(I18nKey.PROFILE_GENDER, user.botLanguage, {
-        value: this.resolveGender(user.gender, user.botLanguage),
+      this.t(I18nKey.PROFILE_AGE, user.getBotLanguageCode, {
+        value: user.age ?? notSet,
       }),
-      this.t(I18nKey.PROFILE_GAMES, user.botLanguage, {
+      this.t(I18nKey.PROFILE_GENDER, user.getBotLanguageCode, {
+        value: this.resolveGender(user.gender, user.getBotLanguageCode),
+      }),
+      this.t(I18nKey.PROFILE_GAMES, user.getBotLanguageCode, {
         value: this.resolveGames(user),
       }),
-      this.t(I18nKey.PROFILE_HAS_MIC, user.botLanguage, {
-        value: this.resolveMic(user.hasMic, user.botLanguage),
+      this.t(I18nKey.PROFILE_HAS_MIC, user.getBotLanguageCode, {
+        value: this.resolveMic(user.hasMic, user.getBotLanguageCode),
       }),
-      this.t(I18nKey.PROFILE_COMMUNICATION, user.botLanguage, {
+      this.t(I18nKey.PROFILE_COMMUNICATION, user.getBotLanguageCode, {
         value: user.preferredCommunicationWay ?? notSet,
       }),
     ];
@@ -40,7 +42,7 @@ export class ProfileCardComponent extends BaseComponent {
     return lines.join('\n');
   }
 
-  private resolveGender(gender: Gender, botLanguage: Language): string {
+  private resolveGender(gender: Gender, botLanguage: string): string {
     const genderKeyMap: Record<Gender, I18nKey> = {
       [Gender.MALE]: I18nKey.PROFILE_GENDER_MALE,
       [Gender.FEMALE]: I18nKey.PROFILE_GENDER_FEMALE,
@@ -52,13 +54,13 @@ export class ProfileCardComponent extends BaseComponent {
 
   private resolveGames(user: User): string {
     if (!user.games?.length) {
-      return this.t(I18nKey.PROFILE_NO_GAMES, user.botLanguage);
+      return this.t(I18nKey.PROFILE_NO_GAMES, user.getBotLanguageCode);
     }
 
     return user.games.map((g) => g.name).join(', ');
   }
 
-  private resolveMic(hasMic: boolean, lang: Language): string {
+  private resolveMic(hasMic: boolean, lang: string): string {
     const key = hasMic ? I18nKey.PROFILE_MIC_YES : I18nKey.PROFILE_MIC_NO;
     return this.t(key, lang);
   }

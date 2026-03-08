@@ -1,6 +1,5 @@
 import { Transform, TransformFnParams } from 'class-transformer';
-import { IsEnum, IsString, Length, Matches } from 'class-validator';
-import { Language } from 'src/common/constants/supported-language';
+import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
 
 export class CreateUserDto {
   telegramId: number;
@@ -13,6 +12,7 @@ export class CreateUserDto {
 
   telegramUsername: string | null;
 
-  @IsEnum(Language)
-  botLanguage: Language;
+  @IsString()
+  @IsNotEmpty()
+  botLanguageCode: string;
 }

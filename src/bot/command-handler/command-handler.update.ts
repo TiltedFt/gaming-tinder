@@ -6,19 +6,26 @@ import {
   MAIN_MENU_SCENE,
   BotCommand,
   PROFILE_SCENE,
+  DEFAULT_BOT_LANGUAGE,
 } from 'src/common/constants/app-constants';
 import { I18nKey } from 'src/i18n/i18n-keys';
-import { Language } from 'src/common/constants/supported-language';
+import { LanguageService } from 'src/language/language.service';
 
 @Update()
 export class CommandHandler {
-  constructor(private readonly i18n: I18nHelper) {}
+  constructor(
+    private readonly i18n: I18nHelper,
+    private readonly languageService: LanguageService,
+  ) {}
 
   @Start()
   async onStart(@Ctx() ctx: Context) {
     if (!ctx.dbUser) {
-      const lang = (ctx.from?.language_code as Language) || Language.ENGLISH;
-      await ctx.reply(this.i18n.t(I18nKey.WELCOME_NEW_USER, lang));
+      const languageCode = await this.getNewUsersLanguage(
+        ctx.from?.language_code,
+      );
+
+      await ctx.reply(this.i18n.t(I18nKey.WELCOME_NEW_USER, languageCode));
       await ctx.scene.enter(REGISTRATION_WIZARD_SCENE);
       return;
     }
@@ -44,5 +51,16 @@ export class CommandHandler {
   @Command(BotCommand.HELP)
   async onHelp(@Ctx() ctx: Context) {
     await ctx.reply('help command, working on it');
+  }
+
+  private async getNewUsersLanguage(code: string | undefined): Promise<string> {
+    if (!code) return DEFAULT_BOT_LANGUAGE;
+
+    const language = await this.languageService.findBotsLanguageByCode(code);
+    if (language?.code) {
+      return language.code;
+    }
+
+    return DEFAULT_BOT_LANGUAGE;
   }
 }

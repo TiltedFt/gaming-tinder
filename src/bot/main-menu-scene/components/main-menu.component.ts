@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
 import { BaseComponent } from '../../../common/base/base.component';
-import { Language } from 'src/common/constants/supported-language';
 import { Markup } from 'telegraf';
 import { I18nKey } from 'src/i18n/i18n-keys';
 
@@ -16,7 +15,7 @@ export class MainMenuComponent extends BaseComponent {
     super(i18n);
   }
 
-  render(lang: Language) {
+  render(lang: string) {
     return Markup.inlineKeyboard([
       [
         Markup.button.callback(

@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { Language } from 'src/language/entities/language.entity';
 import { Markup } from 'telegraf';
-import { SUPPORTED_LANGUAGES } from 'src/common/constants/app-constants';
 
 @Injectable()
 export class LanguageKeyboardComponent {
-  render() {
-    const buttons = SUPPORTED_LANGUAGES.map((lang) => [
-      Markup.button.callback(lang.label, `lang_${lang.code}`),
+  render(languages: Language[]) {
+    const buttons = languages.map((lang) => [
+      Markup.button.callback(lang.code, `lang_${lang.code}`),
     ]);
     return Markup.inlineKeyboard(buttons);
   }

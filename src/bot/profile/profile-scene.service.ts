@@ -49,7 +49,7 @@ export class ProfileSceneService {
       return;
     }
 
-    const lang = user.botLanguage;
+    const lang = user.getBotLanguageCode;
     const text = this.profileCard.render(user);
     const keyboard = this.profileKeyboard.render(lang, user.hasMic);
 
@@ -83,7 +83,7 @@ export class ProfileSceneService {
 
   @Action(ProfileAction.EDIT_AVATAR)
   async editAvatar(@Ctx() ctx: Context) {
-    const lang = ctx.dbUser!.botLanguage;
+    const lang = ctx.dbUser!.getBotLanguageCode;
     ctx.scene.state.editing = ProfileEditMethods.AVATAR;
     await ctx.reply(
       this.i18n.t(I18nKey.PROFILE_EDIT_AVATAR, lang),
@@ -126,7 +126,7 @@ export class ProfileSceneService {
   async editDescription(@Ctx() ctx: Context) {
     ctx.scene.state.editing = ProfileEditMethods.DESCRIPTION;
     await ctx.reply(
-      this.i18n.t(I18nKey.PROFILE_EDIT_DESCRIPTION, ctx.dbUser!.botLanguage),
+      this.i18n.t(I18nKey.PROFILE_EDIT_DESCRIPTION, ctx.dbUser.getBotLanguageCode),
     );
     await ctx.answerCbQuery();
   }
@@ -134,9 +134,7 @@ export class ProfileSceneService {
   @Action(ProfileAction.EDIT_AGE)
   async editAge(@Ctx() ctx: Context) {
     ctx.scene.state.editing = ProfileEditMethods.AGE;
-    await ctx.reply(
-      this.i18n.t(I18nKey.PROFILE_EDIT_AGE, ctx.dbUser!.botLanguage),
-    );
+    await ctx.reply(this.i18n.t(I18nKey.PROFILE_EDIT_AGE, ctx.dbUser.getBotLanguageCode));
     await ctx.answerCbQuery();
   }
 
@@ -144,14 +142,14 @@ export class ProfileSceneService {
   async editCommunication(@Ctx() ctx: Context) {
     ctx.scene.state.editing = ProfileEditMethods.COMMUNICATION;
     await ctx.reply(
-      this.i18n.t(I18nKey.PROFILE_EDIT_COMMUNICATION, ctx.dbUser!.botLanguage),
+      this.i18n.t(I18nKey.PROFILE_EDIT_COMMUNICATION, ctx.dbUser.getBotLanguageCode),
     );
     await ctx.answerCbQuery();
   }
 
   @Action(ProfileAction.EDIT_GENDER)
   async editGender(@Ctx() ctx: Context) {
-    const lang = ctx.dbUser!.botLanguage;
+    const lang = ctx.dbUser!.getBotLanguageCode;
     await ctx.reply(
       this.i18n.t(I18nKey.PROFILE_EDIT_GENDER, lang),
       this.profileGenderKeyboard.render(lang),
@@ -164,7 +162,7 @@ export class ProfileSceneService {
     if (!ctx.callbackQuery || !('data' in ctx.callbackQuery)) return;
 
     const gender = ctx.callbackQuery.data as Gender;
-    const updatedUser = await this.userService.updateAndReturn(ctx.dbUser!.id, {
+    const updatedUser = await this.userService.updateAndReturn(ctx.dbUser.id, {
       gender,
     });
     if (!updatedUser) {
@@ -192,7 +190,7 @@ export class ProfileSceneService {
         const errors = await validate(dto);
         if (errors.length) {
           await ctx.reply(
-            this.i18n.t(I18nKey.PROFILE_INVALID_AGE, ctx.dbUser!.botLanguage),
+            this.i18n.t(I18nKey.PROFILE_INVALID_AGE, ctx.dbUser.getBotLanguageCode),
           );
           return;
         }

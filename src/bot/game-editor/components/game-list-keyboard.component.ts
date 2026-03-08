@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
 import { Markup } from 'telegraf';
 import { BaseComponent } from 'src/common/base/base.component';
-import { Language } from 'src/common/constants/supported-language';
 import { I18nKey } from 'src/i18n/i18n-keys';
 import { Game } from 'src/game/entity/game.entity';
 import { GameEditorAction, REMOVE_PREFIX } from '../game-editor.constants';
@@ -13,7 +12,7 @@ export class GameListKeyboard extends BaseComponent {
     super(i18n);
   }
 
-  render(games: Game[], lang: Language, page: number, totalPages: number) {
+  render(games: Game[], lang: string, page: number, totalPages: number) {
     const buttons: ReturnType<typeof Markup.button.callback>[][] = [];
 
     // game rows with remove button
@@ -23,7 +22,7 @@ export class GameListKeyboard extends BaseComponent {
       ]);
     }
 
-    // pagination 
+    // pagination
     if (totalPages > 1) {
       const paginationRow: ReturnType<typeof Markup.button.callback>[] = [];
 

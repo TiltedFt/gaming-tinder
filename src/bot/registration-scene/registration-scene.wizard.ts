@@ -5,12 +5,11 @@ import { I18nService } from 'nestjs-i18n';
 
 import { Ctx, Message, Sender, Wizard, WizardStep } from 'nestjs-telegraf';
 import {
+  DEFAULT_BOT_LANGUAGE,
   MAIN_MENU_SCENE,
   REGISTRATION_WIZARD_SCENE,
 } from 'src/common/constants/app-constants';
-import { Language } from 'src/common/constants/supported-language';
 import { TelegrafExceptionFilter } from 'src/common/filters/telegraf-exception.filter';
-import { isSupportedLanguage } from 'src/common/utils/utils';
 import type { BotWizardContext } from 'src/interfaces/context.interface';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { I18nKey } from 'src/i18n/i18n-keys';
@@ -35,7 +34,7 @@ export class RegistrationScene {
     await ctx.wizard.next();
   }
 
-  private detectLanguage(ctx: BotWizardContext): Language {
+  private detectLanguage(ctx: BotWizardContext): string {
     const code = ctx.from?.language_code;
     return code && isSupportedLanguage(code) ? code : Language.ENGLISH;
   }
@@ -106,7 +105,7 @@ export class RegistrationScene {
 
   private async handleExpiredSession(ctx: BotWizardContext) {
     await ctx.reply(
-      this.i18n.t(I18nKey.SESSION_EXPIRED, { lang: Language.ENGLISH }),
+      this.i18n.t(I18nKey.SESSION_EXPIRED, { lang: DEFAULT_BOT_LANGUAGE }),
     );
     await ctx.scene.reenter();
   }

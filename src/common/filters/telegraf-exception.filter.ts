@@ -8,10 +8,12 @@ import type {
   BotWizardContext,
   Context,
 } from 'src/interfaces/context.interface';
-import { Language } from '../constants/supported-language';
 import { BotError } from '../errors/bot-error';
 import { I18nKey } from 'src/i18n/i18n-keys';
-import { MAIN_MENU_SCENE } from '../constants/app-constants';
+import {
+  DEFAULT_BOT_LANGUAGE,
+  MAIN_MENU_SCENE,
+} from '../constants/app-constants';
 
 @Catch()
 export class TelegrafExceptionFilter implements ExceptionFilter {
@@ -54,7 +56,7 @@ export class TelegrafExceptionFilter implements ExceptionFilter {
     const lang = wizard?.state?.language;
     if (lang) return lang;
 
-    return Language.ENGLISH;
+    return DEFAULT_BOT_LANGUAGE;
   }
 
   private async notifyAdmin(ctx: Context, exception: Error) {

@@ -10,7 +10,6 @@ import { I18nHelper } from 'src/common/helper/i18n-helper/i18n.helper';
 import { I18nKey } from 'src/i18n/i18n-keys';
 import { GameListKeyboard } from './components/game-list-keyboard.component';
 import { Markup } from 'telegraf';
-import { Language } from 'src/common/constants/supported-language';
 import { GameSearchResultsKeyboard } from './components/game-search-results-keyboard.component';
 import {
   ADD_RESULT_PREFIX,
@@ -49,7 +48,7 @@ export class GameEditorSceneService {
   }
 
   private async showGameList(ctx: Context, editMessage = false) {
-    const lang = ctx.dbUser!.botLanguage;
+    const lang = ctx.dbUser!.getBotLanguageCode;
     const page = ctx.scene.state.gamePage ?? 1;
 
     const { games, total, totalPages } =
@@ -103,7 +102,7 @@ export class GameEditorSceneService {
     if (!ctx.callbackQuery || !('data' in ctx.callbackQuery)) return;
 
     const gameId = ctx.callbackQuery.data.replace(REMOVE_PREFIX, '');
-    const lang = ctx.dbUser!.botLanguage;
+    const lang = ctx.dbUser!.getBotLanguageCode;
 
     const games = await this.userGameService.getUserGames(ctx.dbUser!.id);
     const game = games.find((g) => g.id === gameId);
@@ -123,7 +122,7 @@ export class GameEditorSceneService {
 
   @Action(GameEditorAction.ADD_GAME)
   async onAddGame(@Ctx() ctx: Context) {
-    const lang = ctx.dbUser!.botLanguage;
+    const lang = ctx.dbUser!.getBotLanguageCode;
 
     const games = await this.userGameService.getUserGames(ctx.dbUser!.id);
     if (games.length >= MAX_GAMES) {
@@ -138,7 +137,7 @@ export class GameEditorSceneService {
     await ctx.answerCbQuery();
   }
 
-  private async showSearchPrompt(ctx: Context, lang: Language) {
+  private async showSearchPrompt(ctx: Context, lang: string) {
     const backKeyboard = Markup.inlineKeyboard([
       [
         Markup.button.callback(
@@ -161,7 +160,7 @@ export class GameEditorSceneService {
     if (!('text' in ctx.message!)) return;
 
     const query = ctx.message.text;
-    const lang = ctx.dbUser!.botLanguage;
+    const lang = ctx.dbUser!.getBotLanguageCode;
     const results = await this.gameService.search(query, 5);
 
     if (!results.length) {
@@ -203,7 +202,7 @@ export class GameEditorSceneService {
     if (!ctx.callbackQuery || !('data' in ctx.callbackQuery)) return;
 
     const gameId = ctx.callbackQuery.data.replace(ADD_RESULT_PREFIX, '');
-    const lang = ctx.dbUser!.botLanguage;
+    const lang = ctx.dbUser!.getBotLanguageCode;
 
     const added = await this.userGameService.addGameToUser(
       ctx.dbUser!.id,
@@ -219,7 +218,7 @@ export class GameEditorSceneService {
   }
 
   private async refreshSearchResults(ctx: Context) {
-    const lang = ctx.dbUser!.botLanguage;
+    const lang = ctx.dbUser!.getBotLanguageCode;
     const lastResults = ctx.scene.state.lastSearchResults;
     if (!lastResults?.length) return;
 
