@@ -1,7 +1,14 @@
 import { CustomBaseEntity } from 'src/common/base/base-entity';
 import { Language } from 'src/common/constants/supported-language';
 import { Game } from 'src/game/entity/game.entity';
-import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  OneToOne,
+} from 'typeorm';
 
 export enum Gender {
   MALE = 'male',

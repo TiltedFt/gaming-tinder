@@ -19,7 +19,7 @@ export class UserService {
 
   async updateAndReturn(id: string, data: Partial<UpdateProfileDto>) {
     await this.repository.update(id, data);
-    return this.findById(id) as Promise<User>;
+    return this.findById(id);
   }
 
   findById(id: string) {

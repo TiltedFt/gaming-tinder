@@ -1,6 +1,6 @@
 import { Action, Ctx, On, Scene, SceneEnter } from 'nestjs-telegraf';
 import {
-  BasicCommands,
+  ProfileCommands,
   GAME_EDITOR_SCENE,
   MAIN_MENU_SCENE,
   PROFILE_SCENE,
@@ -23,8 +23,11 @@ import { Gender } from 'src/user/entities/user.entity';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { Language } from 'src/common/constants/supported-language';
+import { UseFilters } from '@nestjs/common';
+import { TelegrafExceptionFilter } from 'src/common/filters/telegraf-exception.filter';
 
 @Scene(PROFILE_SCENE)
+@UseFilters(TelegrafExceptionFilter)
 export class ProfileSceneService {
   constructor(
     private readonly profileCard: ProfileCardComponent,
@@ -96,7 +99,7 @@ export class ProfileSceneService {
           this.i18n.t(I18nKey.CANCEL_AVATAR_UPLOAD, {
             lang: ctx.dbUser.botLanguage,
           }),
-          BasicCommands.CANCEL,
+          ProfileCommands.CANCEL_AVATAR_UPLOAD,
         ),
       ]),
     );
@@ -121,9 +124,10 @@ export class ProfileSceneService {
     await this.updateAndRefreshUser(ctx, { avatarFileId: fileId });
   }
 
-  @Action(BasicCommands.CANCEL)
+  @Action(ProfileCommands.CANCEL_AVATAR_UPLOAD)
   async cancelAvatarUpload(@Ctx() ctx: Context) {
     await ctx.answerCbQuery();
+    ctx.state.editing = null;
     await this.refreshProfile(ctx);
   }
 
@@ -174,10 +178,13 @@ export class ProfileSceneService {
     if (!ctx.callbackQuery || !('data' in ctx.callbackQuery)) return;
 
     const gender = ctx.callbackQuery.data as Gender;
-    ctx.dbUser = await this.userService.updateAndReturn(ctx.dbUser!.id, {
+    const updatedUser = await this.userService.updateAndReturn(ctx.dbUser!.id, {
       gender,
     });
-
+    if (!updatedUser) {
+      return await ctx.scene.enter(REGISTRATION_WIZARD_SCENE);
+    }
+    ctx.dbUser = updatedUser;
     await this.refreshProfile(ctx, true);
     await ctx.answerCbQuery();
   }
@@ -218,7 +225,14 @@ export class ProfileSceneService {
   }
 
   private async updateAndRefreshUser(ctx: Context, data: UpdateProfileDto) {
-    ctx.dbUser = await this.userService.updateAndReturn(ctx.dbUser!.id, data);
+    const updatedUser = await this.userService.updateAndReturn(
+      ctx.dbUser!.id,
+      data,
+    );
+    if (!updatedUser) {
+      return await ctx.scene.enter(REGISTRATION_WIZARD_SCENE);
+    }
+    ctx.dbUser = updatedUser;
     ctx.scene.state.editing = null;
     await this.refreshProfile(ctx, false);
   }

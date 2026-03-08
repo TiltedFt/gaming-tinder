@@ -19,6 +19,7 @@ export class GameService {
 
   // ufffffffffff idk, just a chill coder
   async searchLocal(query: string, limit = 5): Promise<Game[]> {
+    const sanitized = query.replace(/[%_]/g, '\\$&');
     return this.gameRepository
       .createQueryBuilder('game')
       .where('similarity(game.name, :query) > 0.3 OR game.name ILIKE :like', {
@@ -27,7 +28,7 @@ export class GameService {
       })
       .orderBy(`CASE WHEN game.name ILIKE :startsWith THEN 0 ELSE 1 END`, 'ASC')
       .addOrderBy('similarity(game.name, :query)', 'DESC')
-      .setParameter('startsWith', `${query}%`)
+      .setParameter('startsWith', `${sanitized}%`)
       .take(limit)
       .getMany();
   }

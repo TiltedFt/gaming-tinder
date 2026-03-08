@@ -30,8 +30,9 @@ export function createAuthMiddleware(userService: UserService) {
     const isStart = text?.split(' ')[0] === `/${BotCommand.START}`;
     const isInRegistration =
       (ctx as any).session?.__scenes?.current === REGISTRATION_WIZARD_SCENE;
-
-    if (isStart || isInRegistration) return next();
+    const isCallbackQuery = !!(ctx as any).callbackQuery;
+    
+    if (isStart || isInRegistration || isCallbackQuery) return next();
 
     await ctx.reply(
       'Please use /start to register.\nНажмите /start для регистрации.',

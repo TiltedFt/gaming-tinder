@@ -2,6 +2,7 @@ import { Action, Ctx, Scene, SceneEnter } from 'nestjs-telegraf';
 import {
   MAIN_MENU_SCENE,
   PROFILE_SCENE,
+  SEARCH_PLAYERS_SCENE,
 } from 'src/common/constants/app-constants';
 import {
   MainMenuComponent,
@@ -10,8 +11,11 @@ import {
 import type { Context } from '../../interfaces/context.interface';
 import { I18nService } from 'nestjs-i18n';
 import { I18nKey } from 'src/i18n/i18n-keys';
+import { UseFilters } from '@nestjs/common';
+import { TelegrafExceptionFilter } from 'src/common/filters/telegraf-exception.filter';
 
 @Scene(MAIN_MENU_SCENE)
+@UseFilters(TelegrafExceptionFilter)
 export class MainMenuSceneService {
   constructor(
     private readonly mainMenuComponent: MainMenuComponent,
@@ -37,6 +41,6 @@ export class MainMenuSceneService {
   @Action(MenuAction.START_TO_SEARCH)
   async onStartToSearch(@Ctx() ctx: Context) {
     await ctx.answerCbQuery();
-    await ctx.reply('Wokgin on it');
+    await ctx.scene.enter(SEARCH_PLAYERS_SCENE);
   }
 }
