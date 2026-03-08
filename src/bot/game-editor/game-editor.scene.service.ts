@@ -5,7 +5,7 @@ import {
 } from 'src/common/constants/app-constants';
 import type { Context } from 'src/interfaces/context.interface';
 import { GameService } from 'src/game/game.service';
-import { I18nService } from 'nestjs-i18n';
+import { UserGameService } from 'src/game/user-game.service';
 import { I18nKey } from 'src/i18n/i18n-keys';
 import { GameListKeyboard } from './components/game-list-keyboard.component';
 import { Markup } from 'telegraf';
@@ -19,6 +19,7 @@ import {
 import { Game } from 'src/game/entity/game.entity';
 import { UseFilters } from '@nestjs/common';
 import { TelegrafExceptionFilter } from 'src/common/filters/telegraf-exception.filter';
+import { I18nHelper } from 'src/common/helper/i18n-helper/i18n.helper';
 
 const GAMES_PER_PAGE = 10;
 const MAX_GAMES = 20;
@@ -34,18 +35,11 @@ enum GameEditorStep {
 export class GameEditorSceneService {
   constructor(
     private readonly gameService: GameService,
+    private readonly userGameService: UserGameService,
+    private readonly i18n: I18nHelper,
     private readonly gameListKeyboard: GameListKeyboard,
     private readonly gameSearchResultsKeyboard: GameSearchResultsKeyboard,
-    private readonly i18n: I18nService,
   ) {}
-
-  private t(
-    key: string,
-    lang: Language,
-    args?: Record<string, unknown>,
-  ): string {
-    return this.i18n.t(key, { lang, args }) as string;
-  }
 
   @SceneEnter()
   async onSceneEnter(@Ctx() ctx: Context) {
@@ -59,7 +53,7 @@ export class GameEditorSceneService {
     const page = ctx.scene.state.gamePage ?? 1;
 
     const { games, total, totalPages } =
-      await this.gameService.getUserGamesPaginated(
+      await this.userGameService.getUserGamesPaginated(
         ctx.dbUser!.id,
         page,
         GAMES_PER_PAGE,
@@ -67,8 +61,8 @@ export class GameEditorSceneService {
 
     const title =
       total > 0
-        ? this.t(I18nKey.GAMES_LIST_TITLE, lang, { current: total, total })
-        : this.t(I18nKey.GAMES_LIST_EMPTY, lang);
+        ? this.i18n.t(I18nKey.GAMES_LIST_TITLE, lang, { current: total, total })
+        : this.i18n.t(I18nKey.GAMES_LIST_EMPTY, lang);
 
     const keyboard = this.gameListKeyboard.render(
       games,
@@ -82,7 +76,7 @@ export class GameEditorSceneService {
         await ctx.editMessageText(title, keyboard);
         return;
       } catch {
-        // welL:=
+        // Message not modified — user clicked too fast or content identical
       }
     }
     await ctx.reply(title, keyboard);
@@ -111,14 +105,14 @@ export class GameEditorSceneService {
     const gameId = ctx.callbackQuery.data.replace(REMOVE_PREFIX, '');
     const lang = ctx.dbUser!.botLanguage;
 
-    const games = await this.gameService.getUserGames(ctx.dbUser!.id);
+    const games = await this.userGameService.getUserGames(ctx.dbUser!.id);
     const game = games.find((g) => g.id === gameId);
 
-    await this.gameService.removeGameFromUser(ctx.dbUser!.id, gameId);
+    await this.userGameService.removeGameFromUser(ctx.dbUser!.id, gameId);
 
     if (game) {
       await ctx.answerCbQuery(
-        this.t(I18nKey.GAMES_REMOVED, lang, { name: game.name }),
+        this.i18n.t(I18nKey.GAMES_REMOVED, lang, { name: game.name }),
       );
     } else {
       await ctx.answerCbQuery();
@@ -131,10 +125,10 @@ export class GameEditorSceneService {
   async onAddGame(@Ctx() ctx: Context) {
     const lang = ctx.dbUser!.botLanguage;
 
-    const games = await this.gameService.getUserGames(ctx.dbUser!.id);
+    const games = await this.userGameService.getUserGames(ctx.dbUser!.id);
     if (games.length >= MAX_GAMES) {
       await ctx.answerCbQuery(
-        this.t(I18nKey.GAMES_LIMIT_REACHED, lang, { limit: MAX_GAMES }),
+        this.i18n.t(I18nKey.GAMES_LIMIT_REACHED, lang, { limit: MAX_GAMES }),
       );
       return;
     }
@@ -148,12 +142,15 @@ export class GameEditorSceneService {
     const backKeyboard = Markup.inlineKeyboard([
       [
         Markup.button.callback(
-          this.t(I18nKey.GAMES_BTN_BACK_TO_LIST, lang),
+          this.i18n.t(I18nKey.GAMES_BTN_BACK_TO_LIST, lang),
           GameEditorAction.BACK_TO_LIST,
         ),
       ],
     ]);
-    await ctx.reply(this.t(I18nKey.GAMES_SEARCH_PROMPT, lang), backKeyboard);
+    await ctx.reply(
+      this.i18n.t(I18nKey.GAMES_SEARCH_PROMPT, lang),
+      backKeyboard,
+    );
   }
 
   @On('text')
@@ -166,20 +163,20 @@ export class GameEditorSceneService {
     const query = ctx.message.text;
     if (query.startsWith('/')) return;
 
-    // остаёмся в RESULTS но принимаем новый текст
     const lang = ctx.dbUser!.botLanguage;
     const results = await this.gameService.search(query, 5);
+
     if (!results.length) {
       const keyboard = Markup.inlineKeyboard([
         [
           Markup.button.callback(
-            this.t(I18nKey.GAMES_BTN_BACK_TO_LIST, lang),
+            this.i18n.t(I18nKey.GAMES_BTN_BACK_TO_LIST, lang),
             GameEditorAction.BACK_TO_LIST,
           ),
         ],
       ]);
       await ctx.reply(
-        this.t(I18nKey.GAMES_SEARCH_NO_RESULTS, lang, { query }),
+        this.i18n.t(I18nKey.GAMES_SEARCH_NO_RESULTS, lang, { query }),
         keyboard,
       );
       return;
@@ -189,7 +186,7 @@ export class GameEditorSceneService {
     ctx.scene.state.lastSearchResults = results.map((g) => g.id);
     ctx.scene.state.lastSearchQuery = query;
 
-    const userGames = await this.gameService.getUserGames(ctx.dbUser!.id);
+    const userGames = await this.userGameService.getUserGames(ctx.dbUser!.id);
     const userGameIds = new Set(userGames.map((g) => g.id));
 
     const keyboard = this.gameSearchResultsKeyboard.render(
@@ -198,7 +195,7 @@ export class GameEditorSceneService {
       lang,
     );
     await ctx.reply(
-      this.t(I18nKey.GAMES_SEARCH_RESULTS_TITLE, lang, { query }),
+      this.i18n.t(I18nKey.GAMES_SEARCH_RESULTS_TITLE, lang, { query }),
       keyboard,
     );
   }
@@ -210,13 +207,16 @@ export class GameEditorSceneService {
     const gameId = ctx.callbackQuery.data.replace(ADD_RESULT_PREFIX, '');
     const lang = ctx.dbUser!.botLanguage;
 
-    const added = await this.gameService.addGameToUser(ctx.dbUser!.id, gameId);
+    const added = await this.userGameService.addGameToUser(
+      ctx.dbUser!.id,
+      gameId,
+    );
 
     if (added) {
       await this.refreshSearchResults(ctx);
-      await ctx.answerCbQuery(this.t(I18nKey.GAMES_ADDED, lang));
+      await ctx.answerCbQuery(this.i18n.t(I18nKey.GAMES_ADDED, lang));
     } else {
-      await ctx.answerCbQuery(this.t(I18nKey.GAMES_ALREADY_ADDED, lang));
+      await ctx.answerCbQuery(this.i18n.t(I18nKey.GAMES_ALREADY_ADDED, lang));
     }
   }
 
@@ -227,10 +227,10 @@ export class GameEditorSceneService {
 
     const results = await this.gameService.findByIds(lastResults);
     const ordered = lastResults
-      .map((id) => results.find((g) => g.id === id))
+      .map((id: string) => results.find((g) => g.id === id))
       .filter(Boolean) as Game[];
 
-    const userGames = await this.gameService.getUserGames(ctx.dbUser!.id);
+    const userGames = await this.userGameService.getUserGames(ctx.dbUser!.id);
     const userGameIds = new Set(userGames.map((g) => g.id));
 
     const keyboard = this.gameSearchResultsKeyboard.render(
@@ -242,9 +242,10 @@ export class GameEditorSceneService {
     try {
       await ctx.editMessageReplyMarkup(keyboard.reply_markup);
     } catch {
-      // wellllll
+      // Message not modified — markup identical after add
     }
   }
+
   @Action(GameEditorAction.BACK_TO_LIST)
   async onBackToList(@Ctx() ctx: Context) {
     ctx.scene.state.gameEditorStep = GameEditorStep.LIST;

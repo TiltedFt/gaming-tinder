@@ -7,11 +7,17 @@ import { User } from 'src/user/entities/user.entity';
 import { HttpModule } from '@nestjs/axios';
 import { GameSeedService } from './game-seed.service';
 import { RawgClientService } from './rawg-client.service';
+import { UserGameService } from './user-game.service';
+import { I18nHelperModule } from 'src/common/helper/i18n-helper/i18n-helper.module';
 
 @Module({
   controllers: [GameController],
-  providers: [GameService, GameSeedService, RawgClientService],
-  imports: [TypeOrmModule.forFeature([Game, User]), HttpModule],
-  exports: [GameService],
+  providers: [GameService, GameSeedService, RawgClientService, UserGameService],
+  imports: [
+    TypeOrmModule.forFeature([Game, User]),
+    HttpModule,
+    I18nHelperModule,
+  ],
+  exports: [GameService, UserGameService],
 })
 export class GameModule {}

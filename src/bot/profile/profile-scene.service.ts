@@ -127,7 +127,7 @@ export class ProfileSceneService {
   @Action(ProfileCommands.CANCEL_AVATAR_UPLOAD)
   async cancelAvatarUpload(@Ctx() ctx: Context) {
     await ctx.answerCbQuery();
-    ctx.state.editing = null;
+    ctx.scene.state.editing = null;
     await this.refreshProfile(ctx);
   }
 
