@@ -1,5 +1,6 @@
 import { Transform, TransformFnParams } from 'class-transformer';
 import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
+import { Language } from 'src/language/entities/language.entity';
 
 export class CreateUserDto {
   telegramId: number;
@@ -12,7 +13,5 @@ export class CreateUserDto {
 
   telegramUsername: string | null;
 
-  @IsString()
-  @IsNotEmpty()
-  botLanguageCode: string;
+  botLanguage: Language;
 }

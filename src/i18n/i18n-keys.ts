@@ -1,85 +1,91 @@
-export enum I18nKey {
-  // greeter
+export enum GreeterKey {
   WELCOME_NEW_USER = 'greeter.welcome_new',
+}
 
-  // registration
+export enum RegistrationKey {
   LANGUAGE_FOUND = 'registration.language_found',
   LANGUAGE_NOT_FOUND = 'registration.language_not_found',
   ASK_PUBLIC_USERNAME = 'registration.ask_public_username',
+}
 
-  // profile
-  PROFILE_CARD_TITLE = 'profile.card_title',
-  PROFILE_DESCRIPTION = 'profile.description',
-  PROFILE_AGE = 'profile.age',
-  PROFILE_GENDER = 'profile.gender',
-  PROFILE_GAMES = 'profile.games',
-  PROFILE_HAS_MIC = 'profile.has_mic',
-  PROFILE_COMMUNICATION = 'profile.communication',
-  PROFILE_NOT_SET = 'profile.not_set',
-  PROFILE_NO_GAMES = 'profile.no_games',
-  PROFILE_MIC_YES = 'profile.mic_yes',
-  PROFILE_MIC_NO = 'profile.mic_no',
-  PROFILE_GENDER_MALE = 'profile.gender_male',
-  PROFILE_GENDER_FEMALE = 'profile.gender_female',
-  PROFILE_GENDER_OTHER = 'profile.gender_other',
-  PROFILE_NO_AVATAR = 'profile.no_avatar',
-  PROFILE_ONBOARDING_MESSAGE = 'profile.onboarding_message',
-  PROFILE_BTN_DESCRIPTION = 'profile.btn_description',
-  PROFILE_BTN_AGE = 'profile.btn_age',
-  PROFILE_BTN_GENDER = 'profile.btn_gender',
-  PROFILE_BTN_GAMES = 'profile.btn_games',
-  PROFILE_BTN_MIC = 'profile.btn_mic',
-  PROFILE_BTN_COMMUNICATION = 'profile.btn_communication',
-  PROFILE_BTN_SEARCH = 'profile.btn_search',
-  PROFILE_BTN_MAIN_MENU = 'profile.btn_main_menu',
-  PROFILE_BTN_AVATAR = 'profile.btn_avatar',
-  PROFILE_BTN_SEE_AS_OTHER_USER = 'profile.btn_see_as_other_user',
-  PROFILE_EDIT_DESCRIPTION = 'profile.edit_description',
-  PROFILE_EDIT_AGE = 'profile.edit_age',
-  PROFILE_EDIT_COMMUNICATION = 'profile.edit_communication',
-  PROFILE_EDIT_GENDER = 'profile.edit_gender',
-  PROFILE_EDIT_AVATAR = 'profile.edit_avatar',
+export enum ProfileKey {
+  CARD_TITLE = 'profile.card_title',
+  DESCRIPTION = 'profile.description',
+  AGE = 'profile.age',
+  GENDER = 'profile.gender',
+  GAMES = 'profile.games',
+  HAS_MIC = 'profile.has_mic',
+  COMMUNICATION = 'profile.communication',
+  NOT_SET = 'profile.not_set',
+  NO_GAMES = 'profile.no_games',
+  MIC_YES = 'profile.mic_yes',
+  MIC_NO = 'profile.mic_no',
+  GENDER_MALE = 'profile.gender_male',
+  GENDER_FEMALE = 'profile.gender_female',
+  GENDER_OTHER = 'profile.gender_other',
+  NO_AVATAR = 'profile.no_avatar',
+  ONBOARDING_MESSAGE = 'profile.onboarding_message',
+  BTN_DESCRIPTION = 'profile.btn_description',
+  BTN_AGE = 'profile.btn_age',
+  BTN_GENDER = 'profile.btn_gender',
+  BTN_GAMES = 'profile.btn_games',
+  BTN_MIC = 'profile.btn_mic',
+  BTN_COMMUNICATION = 'profile.btn_communication',
+  BTN_SEARCH = 'profile.btn_search',
+  BTN_MAIN_MENU = 'profile.btn_main_menu',
+  BTN_AVATAR = 'profile.btn_avatar',
+  BTN_SEE_AS_OTHER_USER = 'profile.btn_see_as_other_user',
+  EDIT_DESCRIPTION = 'profile.edit_description',
+  EDIT_AGE = 'profile.edit_age',
+  EDIT_COMMUNICATION = 'profile.edit_communication',
+  EDIT_GENDER = 'profile.edit_gender',
+  EDIT_AVATAR = 'profile.edit_avatar',
   CANCEL_AVATAR_UPLOAD = 'profile.cancel_avatar_upload',
+}
 
-  // server-errors
+export enum ServerErrorKey {
   SOMETHING_WENT_WRONG = 'server-error.something_went_wrong',
+}
 
-  // user-error
+export enum UserErrorKey {
   USERNAME_TAKEN = 'user-error.duplicate_publicUsername',
   ACCOUNT_EXISTS = 'user-error.duplicate_telegramId',
   INVALID_PUBLIC_USERNAME = 'user-error.invalid_public_username',
   PLEASE_USE_BUTTONS = 'user-error.please_use_buttons',
   TEXT_ONLY_PLEASE = 'user-error.text_only_please',
   SESSION_EXPIRED = 'user-error.session_expired',
-  PROFILE_INVALID_AGE = 'user-error.invalid_age',
+  INVALID_AGE = 'user-error.invalid_age',
+}
 
-  // main-menu
+export enum MainMenuKey {
   SHOW_MY_PROFILE = 'main-menu.show_my_profile',
   START_SEARCHING = 'main-menu.start_searching',
-  MAIN_MENU_TITLE = 'main-menu.title',
+  TITLE = 'main-menu.title',
+}
 
-  // common buttons
+export enum CommonButtonKey {
   BACK = 'common-buttons.back',
   ACCEPT = 'common-buttons.accept',
   CANCEL = 'common-buttons.cancel',
   SAVE = 'common-buttons.save',
+}
 
-  // games
-  GAMES_LIST_TITLE = 'games.list_title',
-  GAMES_LIST_EMPTY = 'games.list_empty',
-  GAMES_BTN_ADD = 'games.btn_add_game',
-  GAMES_BTN_REMOVE = 'games.btn_remove',
-  GAMES_BTN_BACK_TO_PROFILE = 'games.btn_back_to_profile',
-  GAMES_BTN_BACK_TO_LIST = 'games.btn_back_to_list',
-  GAMES_BTN_PREV_PAGE = 'games.btn_prev_page',
-  GAMES_BTN_NEXT_PAGE = 'games.btn_next_page',
-  GAMES_PAGE_INDICATOR = 'games.page_indicator',
-  GAMES_SEARCH_PROMPT = 'games.search_prompt',
-  GAMES_SEARCH_NO_RESULTS = 'games.search_no_results',
-  GAMES_SEARCH_RESULTS_TITLE = 'games.search_results_title',
-  GAMES_BTN_ADD_RESULT = 'games.btn_add',
-  GAMES_ADDED = 'games.game_added',
-  GAMES_REMOVED = 'games.game_removed',
-  GAMES_ALREADY_ADDED = 'games.game_already_added',
-  GAMES_LIMIT_REACHED = 'games.game_limit_reached',
+export enum GamesKey {
+  LIST_TITLE = 'games.list_title',
+  LIST_EMPTY = 'games.list_empty',
+  BTN_ADD = 'games.btn_add_game',
+  BTN_REMOVE = 'games.btn_remove',
+  BTN_BACK_TO_PROFILE = 'games.btn_back_to_profile',
+  BTN_BACK_TO_LIST = 'games.btn_back_to_list',
+  BTN_PREV_PAGE = 'games.btn_prev_page',
+  BTN_NEXT_PAGE = 'games.btn_next_page',
+  PAGE_INDICATOR = 'games.page_indicator',
+  SEARCH_PROMPT = 'games.search_prompt',
+  SEARCH_NO_RESULTS = 'games.search_no_results',
+  SEARCH_RESULTS_TITLE = 'games.search_results_title',
+  BTN_ADD_RESULT = 'games.btn_add',
+  ADDED = 'games.game_added',
+  REMOVED = 'games.game_removed',
+  ALREADY_ADDED = 'games.game_already_added',
+  LIMIT_REACHED = 'games.game_limit_reached',
 }

@@ -6,7 +6,7 @@ import { Markup } from 'telegraf';
 export class LanguageKeyboardComponent {
   render(languages: Language[]) {
     const buttons = languages.map((lang) => [
-      Markup.button.callback(lang.code, `lang_${lang.code}`),
+      Markup.button.callback(lang.nativeName, `lang_${lang.code}`),
     ]);
     return Markup.inlineKeyboard(buttons);
   }

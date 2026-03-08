@@ -27,7 +27,7 @@ export class UserService {
   }
 
   findByTelegramId(telegramId: number): Promise<User | null> {
-    return this.repository.findOneBy({ telegramId: telegramId });
+    return this.repository.findOneBy({ telegramId });
   }
 
   findByPublicUsername(publicUsername: string) {
@@ -35,9 +35,17 @@ export class UserService {
   }
 
   async findOrCreate(dto: CreateUserDto): Promise<User> {
+    const existing = await this.findByTelegramId(dto.telegramId);
+    if (existing) return existing;
+
     try {
-      await this.repository.upsert(dto, ['telegramId']);
-      return this.findByTelegramId(dto.telegramId) as Promise<User>;
+      const user = this.repository.create({
+        telegramId: dto.telegramId,
+        publicUsername: dto.publicUsername,
+        telegramUsername: dto.telegramUsername,
+        botLanguage: dto.botLanguage,
+      });
+      return await this.repository.save(user);
     } catch (error) {
       if (
         isUniqueViolation(error) &&

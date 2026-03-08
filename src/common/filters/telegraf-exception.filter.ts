@@ -1,19 +1,15 @@
-// common/filters/telegraf-exception.filter.ts
 import { Catch, ExceptionFilter, ArgumentsHost } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
 import { InjectBot, TelegrafArgumentsHost } from 'nestjs-telegraf';
 import { Telegraf } from 'telegraf';
 import { ConfigService } from '@nestjs/config';
-import type {
-  BotWizardContext,
-  Context,
-} from 'src/interfaces/context.interface';
+import type { Context } from 'src/interfaces/context.interface';
 import { BotError } from '../errors/bot-error';
-import { I18nKey } from 'src/i18n/i18n-keys';
 import {
   DEFAULT_BOT_LANGUAGE,
   MAIN_MENU_SCENE,
 } from '../constants/app-constants';
+import { ServerErrorKey } from 'src/i18n/i18n-keys';
 
 @Catch()
 export class TelegrafExceptionFilter implements ExceptionFilter {
@@ -32,28 +28,30 @@ export class TelegrafExceptionFilter implements ExceptionFilter {
         this.i18n.t(exception.i18nKey, {
           lang,
           args: exception.i18nArgs,
-        }),
+        }) as string,
       );
       return;
     }
 
-    await ctx.reply(this.i18n.t(I18nKey.SOMETHING_WENT_WRONG, { lang }));
+    await ctx.reply(
+      this.i18n.t(ServerErrorKey.SOMETHING_WENT_WRONG, { lang }) as string,
+    );
     await this.notifyAdmin(ctx, exception);
 
-    // in case if unknown error - leave the scene, otherwise it breaks flow
     try {
       await ctx.scene.leave();
       await ctx.scene.enter(MAIN_MENU_SCENE);
     } catch {
-      // well, we are fucked
+      // Scene management failed — nothing else we can do
     }
   }
 
-  private getLang(ctx: Context) {
-    if (ctx.dbUser?.botLanguage) return ctx.dbUser.botLanguage;
+  private getLang(ctx: Context): string {
+    if (ctx.dbUser?.botLanguage?.code) return ctx.dbUser.getBotLanguageCode;
 
+    // wizard context: language code stored in wizard state during registration
     const wizard = (ctx as Record<string, any>).wizard;
-    const lang = wizard?.state?.language;
+    const lang = wizard?.state?.botLanguageCode;
     if (lang) return lang;
 
     return DEFAULT_BOT_LANGUAGE;

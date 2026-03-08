@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
-import { I18nKey } from 'src/i18n/i18n-keys';
 import { Markup } from 'telegraf';
 import { BaseComponent } from '../../../common/base/base.component';
+import { ProfileKey } from 'src/i18n/i18n-keys';
 
 export enum ProfileAction {
   EDIT_DESCRIPTION = 'profile_edit_description',
@@ -25,31 +25,31 @@ export class ProfileKeyboardComponent extends BaseComponent {
     return Markup.inlineKeyboard([
       [
         Markup.button.callback(
-          this.t(I18nKey.PROFILE_BTN_DESCRIPTION, lang),
+          this.t(ProfileKey.BTN_DESCRIPTION, lang),
           ProfileAction.EDIT_DESCRIPTION,
         ),
         Markup.button.callback(
-          this.t(I18nKey.PROFILE_BTN_AVATAR, lang),
+          this.t(ProfileKey.BTN_AVATAR, lang),
           ProfileAction.EDIT_AVATAR,
         ),
       ],
       [
         Markup.button.callback(
-          this.t(I18nKey.PROFILE_BTN_AGE, lang),
+          this.t(ProfileKey.BTN_AGE, lang),
           ProfileAction.EDIT_AGE,
         ),
         Markup.button.callback(
-          this.t(I18nKey.PROFILE_BTN_GENDER, lang),
+          this.t(ProfileKey.BTN_GENDER, lang),
           ProfileAction.EDIT_GENDER,
         ),
       ],
       [
         Markup.button.callback(
-          this.t(I18nKey.PROFILE_BTN_GAMES, lang),
+          this.t(ProfileKey.BTN_GAMES, lang),
           ProfileAction.EDIT_GAMES,
         ),
         Markup.button.callback(
-          this.t(I18nKey.PROFILE_BTN_MIC, lang, {
+          this.t(ProfileKey.BTN_MIC, lang, {
             value: hasMic ? '✅' : '❌',
           }),
           ProfileAction.EDIT_MIC,
@@ -57,13 +57,13 @@ export class ProfileKeyboardComponent extends BaseComponent {
       ],
       [
         Markup.button.callback(
-          this.t(I18nKey.PROFILE_BTN_COMMUNICATION, lang),
+          this.t(ProfileKey.BTN_COMMUNICATION, lang),
           ProfileAction.EDIT_COMMUNICATION,
         ),
       ],
       [
         Markup.button.callback(
-          this.t(I18nKey.PROFILE_BTN_MAIN_MENU, lang),
+          this.t(ProfileKey.BTN_MAIN_MENU, lang),
           ProfileAction.GO_MAIN_MENU,
         ),
       ],

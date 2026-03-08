@@ -8,8 +8,8 @@ import {
   PROFILE_SCENE,
   DEFAULT_BOT_LANGUAGE,
 } from 'src/common/constants/app-constants';
-import { I18nKey } from 'src/i18n/i18n-keys';
 import { LanguageService } from 'src/language/language.service';
+import { GreeterKey } from 'src/i18n/i18n-keys';
 
 @Update()
 export class CommandHandler {
@@ -25,7 +25,7 @@ export class CommandHandler {
         ctx.from?.language_code,
       );
 
-      await ctx.reply(this.i18n.t(I18nKey.WELCOME_NEW_USER, languageCode));
+      await ctx.reply(this.i18n.t(GreeterKey.WELCOME_NEW_USER, languageCode));
       await ctx.scene.enter(REGISTRATION_WIZARD_SCENE);
       return;
     }

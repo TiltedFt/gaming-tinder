@@ -15,4 +15,7 @@ export class Language extends CustomBaseEntity {
   // false = its only for user to Display
   @Column({ type: 'boolean', default: false })
   isBotSupported: boolean;
+
+  @Column({ type: 'varchar', length: 50 })
+  nativeName: string;
 }

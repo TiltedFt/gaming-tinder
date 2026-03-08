@@ -2,7 +2,6 @@ import { UseFilters } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { I18nService } from 'nestjs-i18n';
-
 import { Ctx, Message, Sender, Wizard, WizardStep } from 'nestjs-telegraf';
 import {
   DEFAULT_BOT_LANGUAGE,
@@ -12,10 +11,11 @@ import {
 import { TelegrafExceptionFilter } from 'src/common/filters/telegraf-exception.filter';
 import type { BotWizardContext } from 'src/interfaces/context.interface';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { I18nKey } from 'src/i18n/i18n-keys';
 import { BotError } from 'src/common/errors/bot-error';
 import { LanguageKeyboardComponent } from './components/language-keyboard.component';
 import { UserService } from 'src/user/user.service';
+import { LanguageService } from 'src/language/language.service';
+import { ProfileKey, RegistrationKey, UserErrorKey } from 'src/i18n/i18n-keys';
 
 @Wizard(REGISTRATION_WIZARD_SCENE)
 @UseFilters(TelegrafExceptionFilter)
@@ -24,40 +24,40 @@ export class RegistrationScene {
     private readonly userService: UserService,
     private readonly i18n: I18nService,
     private readonly languageKeyboard: LanguageKeyboardComponent,
+    private readonly languageService: LanguageService,
   ) {}
 
   @WizardStep(1)
   async onSceneEnter(@Ctx() ctx: BotWizardContext) {
-    const lang = this.detectLanguage(ctx);
-    const message = this.getLanguagePrompt(lang);
-    await ctx.reply(message, this.languageKeyboard.render());
+    const languages = await this.languageService.getBotsLanguages();
+    const detected = languages.find((l) => l.code === ctx.from?.language_code);
+    const lang = detected?.code ?? DEFAULT_BOT_LANGUAGE;
+
+    const messageKey = detected
+      ? RegistrationKey.LANGUAGE_FOUND
+      : RegistrationKey.LANGUAGE_NOT_FOUND;
+
+    const message = this.i18n.t(messageKey, {
+      lang,
+      args: { language: lang.toUpperCase() },
+    }) as string;
+
+    await ctx.reply(message, this.languageKeyboard.render(languages));
     await ctx.wizard.next();
-  }
-
-  private detectLanguage(ctx: BotWizardContext): string {
-    const code = ctx.from?.language_code;
-    return code && isSupportedLanguage(code) ? code : Language.ENGLISH;
-  }
-
-  private getLanguagePrompt(lang: string): string {
-    return isSupportedLanguage(lang)
-      ? this.i18n.t(I18nKey.LANGUAGE_FOUND, {
-          lang,
-          args: { language: lang.toUpperCase() },
-        })
-      : this.i18n.t(I18nKey.LANGUAGE_NOT_FOUND, { lang: Language.ENGLISH });
   }
 
   @WizardStep(2)
   async onLanguageSelected(@Ctx() ctx: BotWizardContext) {
     if (!ctx.callbackQuery || !('data' in ctx.callbackQuery)) {
       await ctx.reply(
-        this.i18n.t(I18nKey.PLEASE_USE_BUTTONS, { lang: Language.ENGLISH }),
+        this.i18n.t(UserErrorKey.PLEASE_USE_BUTTONS, {
+          lang: DEFAULT_BOT_LANGUAGE,
+        }) as string,
       );
       return;
     }
 
-    if (ctx.wizard.state['botLanguage']) {
+    if (ctx.wizard.state['botLanguageCode']) {
       await ctx.answerCbQuery();
       return;
     }
@@ -65,11 +65,21 @@ export class RegistrationScene {
     const match = ctx.callbackQuery.data.match(/^lang_(.+)$/);
     if (!match) return;
 
-    const lang = match[1];
-    ctx.wizard.state['botLanguage'] = lang;
+    const selectedCode = match[1];
+
+    const language =
+      await this.languageService.findBotsLanguageByCode(selectedCode);
+    if (!language) return;
+
+    ctx.wizard.state['botLanguageCode'] = language.code;
+    ctx.wizard.state['botLanguageId'] = language.id;
 
     await ctx.answerCbQuery();
-    await ctx.reply(this.i18n.t(I18nKey.ASK_PUBLIC_USERNAME, { lang }));
+    await ctx.reply(
+      this.i18n.t(RegistrationKey.ASK_PUBLIC_USERNAME, {
+        lang: language.code,
+      }) as string,
+    );
     ctx.wizard.next();
   }
 
@@ -80,15 +90,25 @@ export class RegistrationScene {
     @Sender('id') telegramId: number,
     @Sender('username') telegramUsername: string | undefined,
   ) {
-    const language = ctx.wizard.state['botLanguage'];
+    const botLanguageCode = ctx.wizard.state['botLanguageCode'] as
+      | string
+      | undefined;
+    const botLanguageId = ctx.wizard.state['botLanguageId'] as
+      | string
+      | undefined;
 
     if (publicUsername === '/start') {
       await ctx.scene.leave();
       return;
     }
 
+    if (!botLanguageCode || !botLanguageId)
+      return this.handleExpiredSession(ctx);
+    if (!publicUsername) return this.askForText(ctx, botLanguageCode);
+
+    const language =
+      await this.languageService.findBotsLanguageByCode(botLanguageCode);
     if (!language) return this.handleExpiredSession(ctx);
-    if (!publicUsername) return this.askForText(ctx, language);
 
     const dto = plainToInstance(CreateUserDto, {
       telegramId,
@@ -98,27 +118,32 @@ export class RegistrationScene {
     });
 
     const errors = await validate(dto);
-    if (errors.length) return this.askForValidUsername(ctx, language);
+    if (errors.length) return this.askForValidUsername(ctx, botLanguageCode);
 
-    await this.completeRegistration(ctx, dto, language);
+    await this.completeRegistration(ctx, dto, botLanguageCode);
   }
 
   private async handleExpiredSession(ctx: BotWizardContext) {
     await ctx.reply(
-      this.i18n.t(I18nKey.SESSION_EXPIRED, { lang: DEFAULT_BOT_LANGUAGE }),
+      this.i18n.t(UserErrorKey.SESSION_EXPIRED, {
+        lang: DEFAULT_BOT_LANGUAGE,
+      }) as string,
     );
     await ctx.scene.reenter();
   }
 
   private async askForText(ctx: BotWizardContext, lang: string) {
-    await ctx.reply(this.i18n.t(I18nKey.TEXT_ONLY_PLEASE, { lang }));
+    await ctx.reply(
+      this.i18n.t(UserErrorKey.TEXT_ONLY_PLEASE, { lang }) as string,
+    );
   }
 
   private async askForValidUsername(ctx: BotWizardContext, lang: string) {
-    await ctx.reply(this.i18n.t(I18nKey.INVALID_PUBLIC_USERNAME, { lang }));
+    await ctx.reply(
+      this.i18n.t(UserErrorKey.INVALID_PUBLIC_USERNAME, { lang }) as string,
+    );
   }
 
-  // show profile and suggest to customize it OR start searching
   private async completeRegistration(
     ctx: BotWizardContext,
     dto: CreateUserDto,
@@ -129,13 +154,16 @@ export class RegistrationScene {
       ctx.dbUser = user;
 
       await ctx.reply(
-        this.i18n.t(I18nKey.PROFILE_ONBOARDING_MESSAGE, { lang }),
+        this.i18n.t(ProfileKey.ONBOARDING_MESSAGE, { lang }) as string,
       );
       await ctx.scene.enter(MAIN_MENU_SCENE);
     } catch (error) {
       if (error instanceof BotError) {
         await ctx.reply(
-          this.i18n.t(error.i18nKey, { lang, args: error.i18nArgs }),
+          this.i18n.t(error.i18nKey, {
+            lang,
+            args: error.i18nArgs,
+          }) as string,
         );
         return;
       }

@@ -7,7 +7,6 @@ import type { Context } from 'src/interfaces/context.interface';
 import { GameService } from 'src/game/game.service';
 import { UserGameService } from 'src/game/user-game.service';
 import { I18nHelper } from 'src/common/helper/i18n-helper/i18n.helper';
-import { I18nKey } from 'src/i18n/i18n-keys';
 import { GameListKeyboard } from './components/game-list-keyboard.component';
 import { Markup } from 'telegraf';
 import { GameSearchResultsKeyboard } from './components/game-search-results-keyboard.component';
@@ -19,6 +18,7 @@ import {
 import { Game } from 'src/game/entity/game.entity';
 import { UseFilters } from '@nestjs/common';
 import { TelegrafExceptionFilter } from 'src/common/filters/telegraf-exception.filter';
+import { GamesKey } from 'src/i18n/i18n-keys';
 
 const GAMES_PER_PAGE = 10;
 const MAX_GAMES = 20;
@@ -60,8 +60,8 @@ export class GameEditorSceneService {
 
     const title =
       total > 0
-        ? this.i18n.t(I18nKey.GAMES_LIST_TITLE, lang, { current: total, total })
-        : this.i18n.t(I18nKey.GAMES_LIST_EMPTY, lang);
+        ? this.i18n.t(GamesKey.LIST_TITLE, lang, { current: total, total })
+        : this.i18n.t(GamesKey.LIST_EMPTY, lang);
 
     const keyboard = this.gameListKeyboard.render(
       games,
@@ -111,7 +111,7 @@ export class GameEditorSceneService {
 
     if (game) {
       await ctx.answerCbQuery(
-        this.i18n.t(I18nKey.GAMES_REMOVED, lang, { name: game.name }),
+        this.i18n.t(GamesKey.REMOVED, lang, { name: game.name }),
       );
     } else {
       await ctx.answerCbQuery();
@@ -127,7 +127,7 @@ export class GameEditorSceneService {
     const games = await this.userGameService.getUserGames(ctx.dbUser!.id);
     if (games.length >= MAX_GAMES) {
       await ctx.answerCbQuery(
-        this.i18n.t(I18nKey.GAMES_LIMIT_REACHED, lang, { limit: MAX_GAMES }),
+        this.i18n.t(GamesKey.LIMIT_REACHED, lang, { limit: MAX_GAMES }),
       );
       return;
     }
@@ -141,15 +141,12 @@ export class GameEditorSceneService {
     const backKeyboard = Markup.inlineKeyboard([
       [
         Markup.button.callback(
-          this.i18n.t(I18nKey.GAMES_BTN_BACK_TO_LIST, lang),
+          this.i18n.t(GamesKey.BTN_BACK_TO_LIST, lang),
           GameEditorAction.BACK_TO_LIST,
         ),
       ],
     ]);
-    await ctx.reply(
-      this.i18n.t(I18nKey.GAMES_SEARCH_PROMPT, lang),
-      backKeyboard,
-    );
+    await ctx.reply(this.i18n.t(GamesKey.SEARCH_PROMPT, lang), backKeyboard);
   }
 
   @On('text')
@@ -167,13 +164,13 @@ export class GameEditorSceneService {
       const keyboard = Markup.inlineKeyboard([
         [
           Markup.button.callback(
-            this.i18n.t(I18nKey.GAMES_BTN_BACK_TO_LIST, lang),
+            this.i18n.t(GamesKey.BTN_BACK_TO_LIST, lang),
             GameEditorAction.BACK_TO_LIST,
           ),
         ],
       ]);
       await ctx.reply(
-        this.i18n.t(I18nKey.GAMES_SEARCH_NO_RESULTS, lang, { query }),
+        this.i18n.t(GamesKey.SEARCH_NO_RESULTS, lang, { query }),
         keyboard,
       );
       return;
@@ -192,7 +189,7 @@ export class GameEditorSceneService {
       lang,
     );
     await ctx.reply(
-      this.i18n.t(I18nKey.GAMES_SEARCH_RESULTS_TITLE, lang, { query }),
+      this.i18n.t(GamesKey.SEARCH_RESULTS_TITLE, lang, { query }),
       keyboard,
     );
   }
@@ -211,9 +208,9 @@ export class GameEditorSceneService {
 
     if (added) {
       await this.refreshSearchResults(ctx);
-      await ctx.answerCbQuery(this.i18n.t(I18nKey.GAMES_ADDED, lang));
+      await ctx.answerCbQuery(this.i18n.t(GamesKey.ADDED, lang));
     } else {
-      await ctx.answerCbQuery(this.i18n.t(I18nKey.GAMES_ALREADY_ADDED, lang));
+      await ctx.answerCbQuery(this.i18n.t(GamesKey.ALREADY_ADDED, lang));
     }
   }
 

@@ -17,13 +17,13 @@ import {
 import { UserService } from 'src/user/user.service';
 import { UpdateAgeDto, UpdateProfileDto } from 'src/user/dto/update-user.dto';
 import { I18nHelper } from 'src/common/helper/i18n-helper/i18n.helper';
-import { I18nKey } from 'src/i18n/i18n-keys';
 import { ProfileGenderKeyboard } from './components/profile-gender-keyboard.component';
 import { Gender } from 'src/user/entities/user.entity';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { UseFilters } from '@nestjs/common';
 import { TelegrafExceptionFilter } from 'src/common/filters/telegraf-exception.filter';
+import { ProfileKey, UserErrorKey } from 'src/i18n/i18n-keys';
 
 @Scene(PROFILE_SCENE)
 @UseFilters(TelegrafExceptionFilter)
@@ -63,7 +63,7 @@ export class ProfileSceneService {
           await this.userService.updateAndReturn(user.id, {
             avatarFileId: null,
           });
-          await ctx.reply(this.i18n.t(I18nKey.PROFILE_NO_AVATAR, lang));
+          await ctx.reply(this.i18n.t(ProfileKey.NO_AVATAR, lang));
         }
       }
       await ctx.reply(text, keyboard);
@@ -86,10 +86,10 @@ export class ProfileSceneService {
     const lang = ctx.dbUser!.getBotLanguageCode;
     ctx.scene.state.editing = ProfileEditMethods.AVATAR;
     await ctx.reply(
-      this.i18n.t(I18nKey.PROFILE_EDIT_AVATAR, lang),
+      this.i18n.t(ProfileKey.EDIT_AVATAR, lang),
       Markup.inlineKeyboard([
         Markup.button.callback(
-          this.i18n.t(I18nKey.CANCEL_AVATAR_UPLOAD, lang),
+          this.i18n.t(ProfileKey.CANCEL_AVATAR_UPLOAD, lang),
           ProfileCommands.CANCEL_AVATAR_UPLOAD,
         ),
       ]),
@@ -126,7 +126,7 @@ export class ProfileSceneService {
   async editDescription(@Ctx() ctx: Context) {
     ctx.scene.state.editing = ProfileEditMethods.DESCRIPTION;
     await ctx.reply(
-      this.i18n.t(I18nKey.PROFILE_EDIT_DESCRIPTION, ctx.dbUser.getBotLanguageCode),
+      this.i18n.t(ProfileKey.EDIT_DESCRIPTION, ctx.dbUser.getBotLanguageCode),
     );
     await ctx.answerCbQuery();
   }
@@ -134,7 +134,9 @@ export class ProfileSceneService {
   @Action(ProfileAction.EDIT_AGE)
   async editAge(@Ctx() ctx: Context) {
     ctx.scene.state.editing = ProfileEditMethods.AGE;
-    await ctx.reply(this.i18n.t(I18nKey.PROFILE_EDIT_AGE, ctx.dbUser.getBotLanguageCode));
+    await ctx.reply(
+      this.i18n.t(ProfileKey.EDIT_AGE, ctx.dbUser.getBotLanguageCode),
+    );
     await ctx.answerCbQuery();
   }
 
@@ -142,7 +144,7 @@ export class ProfileSceneService {
   async editCommunication(@Ctx() ctx: Context) {
     ctx.scene.state.editing = ProfileEditMethods.COMMUNICATION;
     await ctx.reply(
-      this.i18n.t(I18nKey.PROFILE_EDIT_COMMUNICATION, ctx.dbUser.getBotLanguageCode),
+      this.i18n.t(ProfileKey.EDIT_COMMUNICATION, ctx.dbUser.getBotLanguageCode),
     );
     await ctx.answerCbQuery();
   }
@@ -151,7 +153,7 @@ export class ProfileSceneService {
   async editGender(@Ctx() ctx: Context) {
     const lang = ctx.dbUser!.getBotLanguageCode;
     await ctx.reply(
-      this.i18n.t(I18nKey.PROFILE_EDIT_GENDER, lang),
+      this.i18n.t(ProfileKey.EDIT_GENDER, lang),
       this.profileGenderKeyboard.render(lang),
     );
     await ctx.answerCbQuery();
@@ -190,7 +192,10 @@ export class ProfileSceneService {
         const errors = await validate(dto);
         if (errors.length) {
           await ctx.reply(
-            this.i18n.t(I18nKey.PROFILE_INVALID_AGE, ctx.dbUser.getBotLanguageCode),
+            this.i18n.t(
+              UserErrorKey.INVALID_AGE,
+              ctx.dbUser.getBotLanguageCode,
+            ),
           );
           return;
         }

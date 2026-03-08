@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
 import { Markup } from 'telegraf';
 import { BaseComponent } from 'src/common/base/base.component';
-import { I18nKey } from 'src/i18n/i18n-keys';
 import { Game } from 'src/game/entity/game.entity';
 import { GameEditorAction, REMOVE_PREFIX } from '../game-editor.constants';
+import { GamesKey } from 'src/i18n/i18n-keys';
 
 @Injectable()
 export class GameListKeyboard extends BaseComponent {
@@ -29,7 +29,7 @@ export class GameListKeyboard extends BaseComponent {
       if (page > 1) {
         paginationRow.push(
           Markup.button.callback(
-            this.t(I18nKey.GAMES_BTN_PREV_PAGE, lang),
+            this.t(GamesKey.BTN_PREV_PAGE, lang),
             GameEditorAction.PREV_PAGE,
           ),
         );
@@ -37,7 +37,7 @@ export class GameListKeyboard extends BaseComponent {
 
       paginationRow.push(
         Markup.button.callback(
-          this.t(I18nKey.GAMES_PAGE_INDICATOR, lang, { page, totalPages }),
+          this.t(GamesKey.PAGE_INDICATOR, lang, { page, totalPages }),
           'noop',
         ),
       );
@@ -45,7 +45,7 @@ export class GameListKeyboard extends BaseComponent {
       if (page < totalPages) {
         paginationRow.push(
           Markup.button.callback(
-            this.t(I18nKey.GAMES_BTN_NEXT_PAGE, lang),
+            this.t(GamesKey.BTN_NEXT_PAGE, lang),
             GameEditorAction.NEXT_PAGE,
           ),
         );
@@ -56,14 +56,14 @@ export class GameListKeyboard extends BaseComponent {
 
     buttons.push([
       Markup.button.callback(
-        this.t(I18nKey.GAMES_BTN_ADD, lang),
+        this.t(GamesKey.BTN_ADD, lang),
         GameEditorAction.ADD_GAME,
       ),
     ]);
 
     buttons.push([
       Markup.button.callback(
-        this.t(I18nKey.GAMES_BTN_BACK_TO_PROFILE, lang),
+        this.t(GamesKey.BTN_BACK_TO_PROFILE, lang),
         GameEditorAction.BACK_TO_PROFILE,
       ),
     ]);

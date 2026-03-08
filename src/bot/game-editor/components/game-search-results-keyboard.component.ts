@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
 import { Markup } from 'telegraf';
 import { BaseComponent } from 'src/common/base/base.component';
-import { I18nKey } from 'src/i18n/i18n-keys';
 import { Game } from 'src/game/entity/game.entity';
 import { ADD_RESULT_PREFIX, GameEditorAction } from '../game-editor.constants';
+import { GamesKey } from 'src/i18n/i18n-keys';
 
 @Injectable()
 export class GameSearchResultsKeyboard extends BaseComponent {
@@ -24,7 +24,7 @@ export class GameSearchResultsKeyboard extends BaseComponent {
 
     buttons.push([
       Markup.button.callback(
-        this.t(I18nKey.GAMES_BTN_BACK_TO_LIST, lang),
+        this.t(GamesKey.BTN_BACK_TO_LIST, lang),
         GameEditorAction.BACK_TO_LIST,
       ),
     ]);
