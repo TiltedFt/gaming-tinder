@@ -252,17 +252,27 @@ export class ProfileSceneService {
       nativeName: true,
       id: true,
     });
+
     const userLangs = await this.userService.getSpokenLanguageIds(
       ctx.dbUser.id,
     );
+
     const keyboard = this.userSpokenLanguagesKeyboard.render(
       languages,
       userLangs,
+      ctx.dbUser.getBotLanguageCode,
     );
-    await ctx.reply(ProfileKey.CHOOSE_SPOKEN_LANGUAGES, keyboard);
+
+    await ctx.reply(
+      this.i18n.t(
+        ProfileKey.CHOOSE_SPOKEN_LANGUAGES,
+        ctx.dbUser.getBotLanguageCode,
+      ),
+      keyboard,
+    );
   }
 
-  @Action(/^spokenlang_(\d+)$/)
+  @Action(/^spokenlang_([0-9a-f-]+)$/i)
   async onLanguageToggle(@Ctx() ctx: Context) {
     const langId = (ctx.callbackQuery as any).data.replace('spokenlang_', '');
     await this.userService.toggleSpokenLanguage(ctx.dbUser.id, langId);
@@ -271,20 +281,25 @@ export class ProfileSceneService {
       nativeName: true,
       id: true,
     });
+
     const userLangs = await this.userService.getSpokenLanguageIds(
       ctx.dbUser.id,
     );
+
     const keyboard = this.userSpokenLanguagesKeyboard.render(
       languages,
       userLangs,
+      ctx.dbUser.getBotLanguageCode,
     );
+
     await ctx.editMessageReplyMarkup(keyboard.reply_markup);
     await ctx.answerCbQuery();
   }
 
   @Action('spokenlang_done')
   async onLanguagesDone(@Ctx() ctx: Context) {
+    const lang = ctx.dbUser!.getBotLanguageCode;
     await ctx.deleteMessage();
-    await ctx.reply('Языки сохранены ✅');
+    await this.refreshProfile(ctx);
   }
 }

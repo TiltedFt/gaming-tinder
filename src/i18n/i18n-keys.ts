@@ -43,6 +43,7 @@ export enum ProfileKey {
   CANCEL_AVATAR_UPLOAD = 'profile.cancel_avatar_upload',
   SPOKEN_LANGUAGES = 'profile.spoken_languages',
   CHOOSE_SPOKEN_LANGUAGES = 'profile.chose_spoken_language',
+  SPOKEN_LANGUAGES_SAVED = 'profile.spoken_languages_saved',
 }
 
 export enum ServerErrorKey {
