@@ -22,7 +22,7 @@ export class UserSpokenLanguagesKeyboard extends BaseComponent {
 
     buttons.push([
       Markup.button.callback(
-        this.t(ProfileKey.SPOKEN_LANGUAGES_SAVED, lang),
+        this.t(ProfileKey.SPOKEN_LANGUAGES_DONE, lang),
         'spokenlang_done',
       ),
     ]);

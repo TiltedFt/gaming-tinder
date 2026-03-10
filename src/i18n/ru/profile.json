@@ -34,5 +34,8 @@
   "chose_spoken_language": "Выбери языки, на которых ты говоришь:",
   "spoken_languages_saved": "Языки сохранены ✅",
   "remove_avatar": "🗑 Удалить текущую аватарку",
-  "spoken_languages": "🌐 Языки"
+  "spoken_languages": "🌐 Языки",
+  "spoken_languages_display": "🌐 Языки: {value}",
+  "no_spoken_languages": "не выбраны",
+  "spoken_languages_done": "✔️ Done"
 }

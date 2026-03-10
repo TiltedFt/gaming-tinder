@@ -33,6 +33,9 @@
   "cancel_avatar_upload": "Cancel",
   "remove_avatar": "🗑 Remove current picture",
   "spoken_languages": "🌐 Languages",
+  "spoken_languages_display": "🌐 Languages: {value}",
+  "no_spoken_languages": "none selected",
   "chose_spoken_language": "Chose languages, which you speak in games:",
-  "spoken_languages_saved": "Languages saved ✅"
+  "spoken_languages_saved": "Languages saved ✅",
+  "spoken_languages_done": "✔️ Done"
 }

@@ -47,6 +47,7 @@ export enum ProfileKey {
   REMOVE_AVATAR = 'profile.remove_avatar',
   SPOKEN_LANGUAGES_DISPLAY = 'profile.spoken_languages_display',
   NO_SPOKEN_LANGUAGES = 'profile.no_spoken_languages',
+  SPOKEN_LANGUAGES_DONE = 'profile.spoken_languages_done',
 }
 
 export enum ServerErrorKey {
