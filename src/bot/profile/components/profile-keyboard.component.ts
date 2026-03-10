@@ -12,6 +12,7 @@ export enum ProfileAction {
   EDIT_MIC = 'profile_edit_mic',
   EDIT_AVATAR = 'profile_edit_avatar',
   EDIT_COMMUNICATION = 'profile_edit_communication',
+  EDIT_SPOKEN_LANGUAGES = 'profile_edit_spoken_languages',
   GO_MAIN_MENU = 'profile_go_main_menu',
 }
 
@@ -59,6 +60,10 @@ export class ProfileKeyboardComponent extends BaseComponent {
         Markup.button.callback(
           this.t(ProfileKey.BTN_COMMUNICATION, lang),
           ProfileAction.EDIT_COMMUNICATION,
+        ),
+        Markup.button.callback(
+          this.t(ProfileKey.SPOKEN_LANGUAGES, lang),
+          ProfileAction.EDIT_SPOKEN_LANGUAGES,
         ),
       ],
       [

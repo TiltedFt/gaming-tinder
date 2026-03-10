@@ -24,6 +24,8 @@ import { validate } from 'class-validator';
 import { UseFilters } from '@nestjs/common';
 import { TelegrafExceptionFilter } from 'src/common/filters/telegraf-exception.filter';
 import { ProfileKey, UserErrorKey } from 'src/i18n/i18n-keys';
+import { LanguageService } from 'src/language/language.service';
+import { UserSpokenLanguagesKeyboard } from './components/user-spoken-languages.component';
 
 @Scene(PROFILE_SCENE)
 @UseFilters(TelegrafExceptionFilter)
@@ -32,8 +34,10 @@ export class ProfileSceneService {
     private readonly profileCard: ProfileCardComponent,
     private readonly profileKeyboard: ProfileKeyboardComponent,
     private readonly profileGenderKeyboard: ProfileGenderKeyboard,
+    private readonly userSpokenLanguagesKeyboard: UserSpokenLanguagesKeyboard,
     private readonly userService: UserService,
     private readonly i18n: I18nHelper,
+    private readonly languagesService: LanguageService,
   ) {}
 
   @SceneEnter()
@@ -240,5 +244,47 @@ export class ProfileSceneService {
   async editGames(@Ctx() ctx: Context) {
     await ctx.scene.enter(GAME_EDITOR_SCENE);
     await ctx.answerCbQuery();
+  }
+
+  @Action(ProfileAction.EDIT_SPOKEN_LANGUAGES)
+  async getLanguages(@Ctx() ctx: Context) {
+    const languages = await this.languagesService.getAllWithSelection({
+      nativeName: true,
+      id: true,
+    });
+    const userLangs = await this.userService.getSpokenLanguageIds(
+      ctx.dbUser.id,
+    );
+    const keyboard = this.userSpokenLanguagesKeyboard.render(
+      languages,
+      userLangs,
+    );
+    await ctx.reply(ProfileKey.CHOOSE_SPOKEN_LANGUAGES, keyboard);
+  }
+
+  @Action(/^spokenlang_(\d+)$/)
+  async onLanguageToggle(@Ctx() ctx: Context) {
+    const langId = (ctx.callbackQuery as any).data.replace('spokenlang_', '');
+    await this.userService.toggleSpokenLanguage(ctx.dbUser.id, langId);
+
+    const languages = await this.languagesService.getAllWithSelection({
+      nativeName: true,
+      id: true,
+    });
+    const userLangs = await this.userService.getSpokenLanguageIds(
+      ctx.dbUser.id,
+    );
+    const keyboard = this.userSpokenLanguagesKeyboard.render(
+      languages,
+      userLangs,
+    );
+    await ctx.editMessageReplyMarkup(keyboard.reply_markup);
+    await ctx.answerCbQuery();
+  }
+
+  @Action('spokenlang_done')
+  async onLanguagesDone(@Ctx() ctx: Context) {
+    await ctx.deleteMessage();
+    await ctx.reply('Языки сохранены ✅');
   }
 }

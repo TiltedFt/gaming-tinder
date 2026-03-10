@@ -30,5 +30,6 @@
   "edit_age": "Type in your age as numbers:",
   "edit_communication": "Describe your preffered way to communicate. For example Discord, TeamSpeak or ingame chat",
   "edit_avatar": "Upload your profile picture or even a short video!",
-  "cancel_avatar_upload": "Cancel"
+  "cancel_avatar_upload": "Cancel",
+  "chose_spoken_language": "Chose languages, which you speak in games:"
 }

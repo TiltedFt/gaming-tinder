@@ -63,4 +63,29 @@ export class UserService {
       relations: ['games'],
     });
   }
+  async getSpokenLanguageIds(userId: string): Promise<string[]> {
+    const user = await this.repository.findOne({
+      where: { id: userId },
+      relations: { spokenLanguages: true },
+      select: { id: true, spokenLanguages: { id: true } },
+    });
+    return user?.spokenLanguages.map((l) => l.id) ?? [];
+  }
+
+  async toggleSpokenLanguage(userId: string, langId: string) {
+    const user = await this.repository.findOneBy({ id: userId });
+    if (!user) return;
+
+    const current = await this.getSpokenLanguageIds(userId);
+    const relation = this.repository
+      .createQueryBuilder()
+      .relation(User, 'spokenLanguages')
+      .of(user.id);
+
+    if (current.includes(langId)) {
+      await relation.remove(langId);
+    } else {
+      await relation.add(langId);
+    }
+  }
 }

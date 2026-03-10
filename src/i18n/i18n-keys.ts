@@ -41,6 +41,8 @@ export enum ProfileKey {
   EDIT_GENDER = 'profile.edit_gender',
   EDIT_AVATAR = 'profile.edit_avatar',
   CANCEL_AVATAR_UPLOAD = 'profile.cancel_avatar_upload',
+  SPOKEN_LANGUAGES = 'profile.spoken_languages',
+  CHOOSE_SPOKEN_LANGUAGES = 'profile.chose_spoken_language',
 }
 
 export enum ServerErrorKey {

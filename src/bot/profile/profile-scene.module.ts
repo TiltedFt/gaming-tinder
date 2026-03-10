@@ -4,6 +4,9 @@ import { ProfileCardComponent } from './components/profile-card.component';
 import { ProfileKeyboardComponent } from './components/profile-keyboard.component';
 import { UserModule } from 'src/user/user.module';
 import { ProfileGenderKeyboard } from './components/profile-gender-keyboard.component';
+import { LanguageService } from 'src/language/language.service';
+import { LanguageModule } from 'src/language/language.module';
+import { UserSpokenLanguagesKeyboard } from './components/user-spoken-languages.component';
 
 @Module({
   providers: [
@@ -11,7 +14,8 @@ import { ProfileGenderKeyboard } from './components/profile-gender-keyboard.comp
     ProfileCardComponent,
     ProfileKeyboardComponent,
     ProfileGenderKeyboard,
+    UserSpokenLanguagesKeyboard
   ],
-  imports: [UserModule],
+  imports: [UserModule, LanguageModule],
 })
 export class ProfileSceneModule {}

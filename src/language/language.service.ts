@@ -3,7 +3,7 @@ import { CreateLanguageDto } from './dto/create-language.dto';
 import { UpdateLanguageDto } from './dto/update-language.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Language } from './entities/language.entity';
-import { Repository } from 'typeorm';
+import { FindOptionsSelect, Repository } from 'typeorm';
 
 @Injectable()
 export class LanguageService implements OnModuleInit {
@@ -27,5 +27,9 @@ export class LanguageService implements OnModuleInit {
 
   findBotsLanguageByCode(code: string) {
     return this.repository.findOneBy({ isBotSupported: true, code });
+  }
+
+  getAllWithSelection(select?: FindOptionsSelect<Language>) {
+    return this.repository.find({ select });
   }
 }
