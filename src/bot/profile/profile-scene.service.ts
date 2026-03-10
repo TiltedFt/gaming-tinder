@@ -42,12 +42,16 @@ export class ProfileSceneService {
 
   @SceneEnter()
   async onSceneEnter(@Ctx() ctx: Context) {
-    const isFromCallback = !!ctx.callbackQuery;
-    await this.refreshProfile(ctx, isFromCallback);
+    ctx.scene.state.editing = null;
+    ctx.scene.state.profileMessageId = null;
+    ctx.scene.state.promptMessageId = null;
+    await this.showProfile(ctx);
   }
 
-  private async refreshProfile(ctx: Context, canEdit = false) {
-    const user = await this.userService.findByIdWithGames(ctx.dbUser!.id);
+  private async showProfile(ctx: Context, forceNew = false) {
+    const user = await this.userService.findByIdWithGamesAndLanguages(
+      ctx.dbUser!.id,
+    );
     if (!user) {
       await ctx.scene.enter(REGISTRATION_WIZARD_SCENE);
       return;
@@ -57,7 +61,7 @@ export class ProfileSceneService {
     const text = this.profileCard.render(user);
     const keyboard = this.profileKeyboard.render(lang, user.hasMic);
 
-    if (user.avatarFileId) {
+    if (forceNew && user.avatarFileId) {
       try {
         await ctx.replyWithPhoto(user.avatarFileId);
       } catch {
@@ -70,34 +74,81 @@ export class ProfileSceneService {
           await ctx.reply(this.i18n.t(ProfileKey.NO_AVATAR, lang));
         }
       }
-      await ctx.reply(text, keyboard);
+      const sent = await ctx.reply(text, keyboard);
+      ctx.scene.state.profileMessageId = sent.message_id;
       return;
     }
 
-    if (canEdit) {
+    const messageId = ctx.scene.state.profileMessageId;
+    if (messageId && !forceNew) {
       try {
-        await ctx.editMessageText(text, keyboard);
-      } catch {
-        await ctx.reply(text, keyboard);
-      }
-    } else {
-      await ctx.reply(text, keyboard);
+        await ctx.telegram.editMessageText(
+          ctx.chat!.id,
+          messageId,
+          undefined,
+          text,
+          keyboard,
+        );
+        return;
+      } catch {}
     }
+
+    const sent = await ctx.reply(text, keyboard);
+    ctx.scene.state.profileMessageId = sent.message_id;
+  }
+
+  private async deletePromptMessage(ctx: Context) {
+    const promptId = ctx.scene.state.promptMessageId;
+    if (!promptId) return;
+    try {
+      await ctx.telegram.deleteMessage(ctx.chat!.id, promptId);
+    } catch {}
+    ctx.scene.state.promptMessageId = null;
+  }
+
+  private async deleteUserMessage(ctx: Context) {
+    if (!ctx.message) return;
+    try {
+      await ctx.telegram.deleteMessage(ctx.chat!.id, ctx.message.message_id);
+    } catch {}
   }
 
   @Action(ProfileAction.EDIT_AVATAR)
   async editAvatar(@Ctx() ctx: Context) {
     const lang = ctx.dbUser!.getBotLanguageCode;
     ctx.scene.state.editing = ProfileEditMethods.AVATAR;
-    await ctx.reply(
-      this.i18n.t(ProfileKey.EDIT_AVATAR, lang),
-      Markup.inlineKeyboard([
+
+    const hasAvatar = !!ctx.dbUser!.avatarFileId;
+    const buttons = [
+      [
         Markup.button.callback(
           this.i18n.t(ProfileKey.CANCEL_AVATAR_UPLOAD, lang),
           ProfileCommands.CANCEL_AVATAR_UPLOAD,
         ),
-      ]),
+      ],
+    ];
+
+    if (hasAvatar) {
+      buttons.unshift([
+        Markup.button.callback(
+          this.i18n.t(ProfileKey.REMOVE_AVATAR, lang),
+          ProfileAction.REMOVE_AVATAR,
+        ),
+      ]);
+    }
+
+    const sent = await ctx.reply(
+      this.i18n.t(ProfileKey.EDIT_AVATAR, lang),
+      Markup.inlineKeyboard(buttons),
     );
+    ctx.scene.state.promptMessageId = sent.message_id;
+    await ctx.answerCbQuery();
+  }
+
+  @Action(ProfileAction.REMOVE_AVATAR)
+  async removeAvatar(@Ctx() ctx: Context) {
+    await this.deletePromptMessage(ctx);
+    await this.updateAndRefreshUser(ctx, { avatarFileId: null });
     await ctx.answerCbQuery();
   }
 
@@ -108,7 +159,8 @@ export class ProfileSceneService {
     const photos = ctx.message!['photo'];
     const fileId = photos[photos.length - 1].file_id;
 
-    await this.updateAndRefreshUser(ctx, { avatarFileId: fileId });
+    await this.deletePromptMessage(ctx);
+    await this.updateAndRefreshUser(ctx, { avatarFileId: fileId }, true);
   }
 
   @On('video')
@@ -116,50 +168,56 @@ export class ProfileSceneService {
     if (ctx.scene.state.editing !== ProfileEditMethods.AVATAR) return;
 
     const fileId = ctx.message!['video'].file_id;
-    await this.updateAndRefreshUser(ctx, { avatarFileId: fileId });
+    await this.deletePromptMessage(ctx);
+    await this.updateAndRefreshUser(ctx, { avatarFileId: fileId }, true);
   }
 
   @Action(ProfileCommands.CANCEL_AVATAR_UPLOAD)
   async cancelAvatarUpload(@Ctx() ctx: Context) {
-    await ctx.answerCbQuery();
     ctx.scene.state.editing = null;
-    await this.refreshProfile(ctx);
+    await this.deletePromptMessage(ctx);
+    await this.showProfile(ctx);
+    await ctx.answerCbQuery();
   }
 
   @Action(ProfileAction.EDIT_DESCRIPTION)
   async editDescription(@Ctx() ctx: Context) {
     ctx.scene.state.editing = ProfileEditMethods.DESCRIPTION;
-    await ctx.reply(
+    const sent = await ctx.reply(
       this.i18n.t(ProfileKey.EDIT_DESCRIPTION, ctx.dbUser.getBotLanguageCode),
     );
+    ctx.scene.state.promptMessageId = sent.message_id;
     await ctx.answerCbQuery();
   }
 
   @Action(ProfileAction.EDIT_AGE)
   async editAge(@Ctx() ctx: Context) {
     ctx.scene.state.editing = ProfileEditMethods.AGE;
-    await ctx.reply(
+    const sent = await ctx.reply(
       this.i18n.t(ProfileKey.EDIT_AGE, ctx.dbUser.getBotLanguageCode),
     );
+    ctx.scene.state.promptMessageId = sent.message_id;
     await ctx.answerCbQuery();
   }
 
   @Action(ProfileAction.EDIT_COMMUNICATION)
   async editCommunication(@Ctx() ctx: Context) {
     ctx.scene.state.editing = ProfileEditMethods.COMMUNICATION;
-    await ctx.reply(
+    const sent = await ctx.reply(
       this.i18n.t(ProfileKey.EDIT_COMMUNICATION, ctx.dbUser.getBotLanguageCode),
     );
+    ctx.scene.state.promptMessageId = sent.message_id;
     await ctx.answerCbQuery();
   }
 
   @Action(ProfileAction.EDIT_GENDER)
   async editGender(@Ctx() ctx: Context) {
     const lang = ctx.dbUser!.getBotLanguageCode;
-    await ctx.reply(
+    const sent = await ctx.reply(
       this.i18n.t(ProfileKey.EDIT_GENDER, lang),
       this.profileGenderKeyboard.render(lang),
     );
+    ctx.scene.state.promptMessageId = sent.message_id;
     await ctx.answerCbQuery();
   }
 
@@ -168,6 +226,11 @@ export class ProfileSceneService {
     if (!ctx.callbackQuery || !('data' in ctx.callbackQuery)) return;
 
     const gender = ctx.callbackQuery.data as Gender;
+    try {
+      await ctx.deleteMessage();
+    } catch {}
+    ctx.scene.state.promptMessageId = null;
+
     const updatedUser = await this.userService.updateAndReturn(ctx.dbUser.id, {
       gender,
     });
@@ -175,7 +238,7 @@ export class ProfileSceneService {
       return await ctx.scene.enter(REGISTRATION_WIZARD_SCENE);
     }
     ctx.dbUser = updatedUser;
-    await this.refreshProfile(ctx, true);
+    await this.showProfile(ctx);
     await ctx.answerCbQuery();
   }
 
@@ -189,6 +252,8 @@ export class ProfileSceneService {
 
     switch (editing) {
       case ProfileEditMethods.DESCRIPTION:
+        await this.deletePromptMessage(ctx);
+        await this.deleteUserMessage(ctx);
         await this.updateAndRefreshUser(ctx, { description: text });
         break;
       case ProfileEditMethods.AGE: {
@@ -203,34 +268,19 @@ export class ProfileSceneService {
           );
           return;
         }
+        await this.deletePromptMessage(ctx);
+        await this.deleteUserMessage(ctx);
         await this.updateAndRefreshUser(ctx, { age: dto.age });
         break;
       }
       case ProfileEditMethods.COMMUNICATION:
+        await this.deletePromptMessage(ctx);
+        await this.deleteUserMessage(ctx);
         await this.updateAndRefreshUser(ctx, {
           preferredCommunicationWay: text,
         });
         break;
     }
-  }
-
-  private async updateAndRefreshUser(ctx: Context, data: UpdateProfileDto) {
-    const updatedUser = await this.userService.updateAndReturn(
-      ctx.dbUser!.id,
-      data,
-    );
-    if (!updatedUser) {
-      return await ctx.scene.enter(REGISTRATION_WIZARD_SCENE);
-    }
-    ctx.dbUser = updatedUser;
-    ctx.scene.state.editing = null;
-    await this.refreshProfile(ctx, false);
-  }
-
-  @Action(ProfileAction.GO_MAIN_MENU)
-  async goToMainMenu(@Ctx() ctx: Context) {
-    await ctx.scene.enter(MAIN_MENU_SCENE);
-    await ctx.answerCbQuery();
   }
 
   @Action(ProfileAction.EDIT_MIC)
@@ -270,6 +320,7 @@ export class ProfileSceneService {
       ),
       keyboard,
     );
+    await ctx.answerCbQuery();
   }
 
   @Action(/^spokenlang_([0-9a-f-]+)$/i)
@@ -298,8 +349,31 @@ export class ProfileSceneService {
 
   @Action('spokenlang_done')
   async onLanguagesDone(@Ctx() ctx: Context) {
-    const lang = ctx.dbUser!.getBotLanguageCode;
     await ctx.deleteMessage();
-    await this.refreshProfile(ctx);
+    await this.showProfile(ctx);
+    await ctx.answerCbQuery();
+  }
+
+  @Action(ProfileAction.GO_MAIN_MENU)
+  async goToMainMenu(@Ctx() ctx: Context) {
+    await ctx.scene.enter(MAIN_MENU_SCENE);
+    await ctx.answerCbQuery();
+  }
+
+  private async updateAndRefreshUser(
+    ctx: Context,
+    data: UpdateProfileDto,
+    forceNew = false,
+  ) {
+    const updatedUser = await this.userService.updateAndReturn(
+      ctx.dbUser!.id,
+      data,
+    );
+    if (!updatedUser) {
+      return await ctx.scene.enter(REGISTRATION_WIZARD_SCENE);
+    }
+    ctx.dbUser = updatedUser;
+    ctx.scene.state.editing = null;
+    await this.showProfile(ctx, forceNew);
   }
 }

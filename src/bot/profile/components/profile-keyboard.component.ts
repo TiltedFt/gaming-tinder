@@ -13,6 +13,7 @@ export enum ProfileAction {
   EDIT_AVATAR = 'profile_edit_avatar',
   EDIT_COMMUNICATION = 'profile_edit_communication',
   EDIT_SPOKEN_LANGUAGES = 'profile_edit_spoken_languages',
+  REMOVE_AVATAR = 'profile_remove_avatar',
   GO_MAIN_MENU = 'profile_go_main_menu',
 }
 

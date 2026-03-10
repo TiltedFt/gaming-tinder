@@ -32,5 +32,7 @@
   "edit_avatar": "Загрузите фотографию или даже короткие видео для отображение в профиле!",
   "cancel_avatar_upload": "Отменить",
   "chose_spoken_language": "Выбери языки, на которых ты говоришь:",
-  "spoken_languages_saved": "Языки сохранены ✅"
+  "spoken_languages_saved": "Языки сохранены ✅",
+  "remove_avatar": "🗑 Удалить текущую аватарку",
+  "spoken_languages": "🌐 Языки"
 }

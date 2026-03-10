@@ -57,12 +57,20 @@ export class UserService {
     }
   }
 
+  findByIdWithGamesAndLanguages(id: string): Promise<User | null> {
+    return this.repository.findOne({
+      where: { id },
+      relations: ['games', 'spokenLanguages'],
+    });
+  }
+
   findByIdWithGames(id: string): Promise<User | null> {
     return this.repository.findOne({
       where: { id },
       relations: ['games'],
     });
   }
+  
   async getSpokenLanguageIds(userId: string): Promise<string[]> {
     const user = await this.repository.findOne({
       where: { id: userId },

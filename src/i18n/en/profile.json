@@ -31,6 +31,8 @@
   "edit_communication": "Describe your preffered way to communicate. For example Discord, TeamSpeak or ingame chat",
   "edit_avatar": "Upload your profile picture or even a short video!",
   "cancel_avatar_upload": "Cancel",
+  "remove_avatar": "🗑 Remove current picture",
+  "spoken_languages": "🌐 Languages",
   "chose_spoken_language": "Chose languages, which you speak in games:",
   "spoken_languages_saved": "Languages saved ✅"
 }

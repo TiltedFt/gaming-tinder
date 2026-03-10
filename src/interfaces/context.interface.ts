@@ -8,6 +8,8 @@ export interface Context extends Scenes.SceneContext<Scenes.SceneSessionData> {
   scene: Scenes.SceneContextScene<Context> & {
     state: {
       editing: ProfileEditMethods | null;
+      profileMessageId?: number | null;
+      promptMessageId?: number | null;
       gameEditorStep?: string | null;
       gamePage?: number;
       lastSearchResults?: string[];

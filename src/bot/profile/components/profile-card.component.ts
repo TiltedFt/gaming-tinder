@@ -31,6 +31,9 @@ export class ProfileCardComponent extends BaseComponent {
       this.t(ProfileKey.GAMES, user.getBotLanguageCode, {
         value: this.resolveGames(user),
       }),
+      this.t(ProfileKey.SPOKEN_LANGUAGES_DISPLAY, user.getBotLanguageCode, {
+        value: this.resolveSpokenLanguages(user),
+      }),
       this.t(ProfileKey.HAS_MIC, user.getBotLanguageCode, {
         value: this.resolveMic(user.hasMic, user.getBotLanguageCode),
       }),
@@ -40,6 +43,13 @@ export class ProfileCardComponent extends BaseComponent {
     ];
 
     return lines.join('\n');
+  }
+
+  private resolveSpokenLanguages(user: User): string {
+    if (!user.spokenLanguages?.length) {
+      return this.t(ProfileKey.NO_SPOKEN_LANGUAGES, user.getBotLanguageCode);
+    }
+    return user.spokenLanguages.map((l) => l.nativeName).join(', ');
   }
 
   private resolveGender(gender: Gender, botLanguage: string): string {
